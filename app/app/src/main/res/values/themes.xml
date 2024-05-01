@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.ServiNear" parent="Base.Theme.ServiNear" />
+
+
+
+    <style name="splashtheme" parent="Base.Theme.ServiNear" >
+        <item name="android:windowBackground">@drawable/splashdrawer</item>
+        
+    </style> 
 </resources>
