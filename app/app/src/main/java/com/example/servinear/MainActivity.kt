@@ -5,30 +5,27 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import java.util.TimerTask
+import java.util.*
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        Thread.sleep(2000)
-        setTheme(R.style.splashtheme)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val btn: Button = findViewById(R.id.register_btn)
 
-        val btn1: Button = findViewById(R.id.login_btn)
-
-        btn1.setOnClickListener {
-
-            val intent: Intent = Intent(this, inicio:: class.java)
-            startActivity(intent)
+        val timerTask: TimerTask = object : TimerTask() {
+            override fun run() {
+                val intent = Intent(this@MainActivity, inicio_sesion::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
 
+        val timer = Timer()
+        timer.schedule(timerTask, 3000) // Aquí puedes ajustar el tiempo en milisegundos antes de que se inicie la actividad de inicio de sesión
 
-        btn.setOnClickListener {
-
-            val intent: Intent = Intent(this, registro:: class.java)
-            startActivity(intent)
-        }
 
 
 

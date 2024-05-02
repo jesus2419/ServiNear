@@ -17,12 +17,16 @@ class registro : AppCompatActivity() {
 
             val intent: Intent = Intent(this, inicio:: class.java)
             startActivity(intent)
+            finish()
+
         }
 
         btn.setOnClickListener {
 
-            val intent: Intent = Intent(this, MainActivity:: class.java)
+            val intent: Intent = Intent(this, inicio_sesion:: class.java)
             startActivity(intent)
+            finish()
+
         }
     }
 }

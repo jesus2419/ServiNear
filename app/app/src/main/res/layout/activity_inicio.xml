@@ -19,7 +19,7 @@
         android:text="Descripcion"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-         />
+        />
 
     <Button
         android:id="@+id/descripcion_id1"
@@ -31,7 +31,7 @@
         android:text="Descripcion"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-         />
+        />
 
     <Button
         android:id="@+id/descripcion_id2"
@@ -43,7 +43,7 @@
         android:text="Descripcion"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-         />
+        />
 
     <ImageView
         android:id="@+id/imageView3"
@@ -179,4 +179,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
