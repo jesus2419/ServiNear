@@ -13,6 +13,9 @@
         android:theme="@style/Theme.ServiNear"
         tools:targetApi="31">
         <activity
+            android:name=".chat"
+            android:exported="false" />
+        <activity
             android:name=".inicio_sesion"
             android:exported="false" />
         <activity
@@ -25,10 +28,9 @@
             android:name=".registro"
             android:exported="false" />
         <activity
-            android:theme="@style/splashtheme"
             android:name=".MainActivity"
             android:exported="true"
-            >
+            android:theme="@style/splashtheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

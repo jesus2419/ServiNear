@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">ServiNear</string>
+
+    <string-array name="tipos_usuario">
+        <item>Selecciona el tipo de usuario</item>
+        <item>Cliente</item>
+        <item>Prestador de servicios</item>
+
+    </string-array>
+
 </resources>

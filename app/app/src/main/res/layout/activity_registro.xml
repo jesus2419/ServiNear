@@ -16,8 +16,8 @@
         android:orientation="vertical"
         tools:ignore="MissingConstraints">
         <ImageView
-            android:layout_width="160dp"
-            android:layout_height="160dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:src="@drawable/icon_account_circle"
             />
         <EditText
@@ -30,7 +30,8 @@
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
             android:inputType="text"
-            android:id="@+id/nombre_input"/>
+            android:id="@+id/nombre_input"
+            android:layout_marginBottom="16dp"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +42,20 @@
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
             android:inputType="text"
-            android:id="@+id/apellidos_input"/>
+            android:id="@+id/apellidos_input"
+            android:layout_marginBottom="16dp"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Correo"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="20sp"
+            android:background="@drawable/rounded_corner"
+            android:padding="18dp"
+            android:inputType="text"
+            android:id="@+id/correo_inout"
+            android:layout_marginBottom="16dp"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +66,8 @@
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
             android:inputType="text"
-            android:id="@+id/username_input"/>
+            android:id="@+id/username_input"
+            android:layout_marginBottom="16dp"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,7 +78,38 @@
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
             android:inputType="text"
-            android:id="@+id/password_input"/>
+            android:id="@+id/password_input"
+            android:layout_marginBottom="5dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:text="Marcar prestador de servicios" />
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:checked="false"
+                android:thumbTint="@drawable/color_switch"
+                android:trackTint="@drawable/color_switch"
+
+
+
+                android:layout_gravity="start"
+            android:layout_marginEnd="8dp"
+                 />
+        </LinearLayout>
+
 
         <Button
             android:layout_width="match_parent"
@@ -88,16 +134,6 @@
             android:id="@+id/iniciar_btn"/>
 
     </LinearLayout>
-
-
-
-
-
-
-
-
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

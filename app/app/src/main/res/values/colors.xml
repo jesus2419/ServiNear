@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+
+    <color name="colorSwitchThumbUnchecked">#918FC2</color> <!-- Cambia este color para el color del interruptor -->
+    <color name="colorSwitchTrackUnchecked">#FFFFFF</color> <!-- Cambia este color para el color de la pista del interruptor -->
+    <color name="colorSwitchThumbChecked">#535C90</color> <!-- Color del interruptor cuando está activado -->
+    <color name="colorSwitchTrackChecked">#FFFFFF</color> <!-- Color de la pista del interruptor cuando está activado -->
+
+
+
+
 </resources>
+

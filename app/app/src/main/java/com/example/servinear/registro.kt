@@ -28,5 +28,9 @@ class registro : AppCompatActivity() {
             finish()
 
         }
+
+
+
+
     }
 }
