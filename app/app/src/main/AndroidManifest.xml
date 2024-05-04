@@ -13,6 +13,9 @@
         android:theme="@style/Theme.ServiNear"
         tools:targetApi="31">
         <activity
+            android:name=".registrar_servicio"
+            android:exported="false" />
+        <activity
             android:name=".chat"
             android:exported="false" />
         <activity
