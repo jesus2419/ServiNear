@@ -98,6 +98,7 @@
             <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/prestador_switch"
 
                 android:checked="false"
                 android:thumbTint="@drawable/color_switch"
