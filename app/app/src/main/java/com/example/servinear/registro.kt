@@ -1,18 +1,26 @@
 package com.example.servinear
 
-import android.annotation.SuppressLint
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Switch
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
+import java.io.InputStream
 
 
 class registro : AppCompatActivity() {
@@ -24,7 +32,27 @@ class registro : AppCompatActivity() {
     private lateinit var passwordInput: EditText
     private lateinit var prestadorSwitch: Switch
     private lateinit var registerButton: Button
-    @SuppressLint("MissingInflatedId")
+    private lateinit var imageView: ImageView
+    private lateinit var selectImageButton: Button
+    private var selectedImageUri: Uri? = null
+
+    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            selectedImageUri = it
+            imageView.setImageURI(it)
+        }
+    }
+
+    // Método para convertir una imagen URI a Base64
+    private fun convertImageToBase64(uri: Uri): String {
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+        val bytes: ByteArray? = inputStream?.readBytes()
+        bytes?.let {
+            return Base64.encodeToString(it, Base64.DEFAULT)
+        }
+        return ""
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registro)
@@ -37,6 +65,19 @@ class registro : AppCompatActivity() {
         passwordInput = findViewById(R.id.password_input)
         prestadorSwitch = findViewById(R.id.prestador_switch)
         registerButton = findViewById(R.id.register_btn)
+        imageView = findViewById(R.id.image_view)
+        selectImageButton = findViewById(R.id.select_image_btn)
+
+        // Solicitar permiso de lectura de almacenamiento
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        }
+
+        // Agregar un listener al botón de seleccionar imagen
+        selectImageButton.setOnClickListener {
+            pickImage.launch("image/*")
+        }
 
         // Agregar un listener al botón de registro
         registerButton.setOnClickListener {
@@ -48,6 +89,11 @@ class registro : AppCompatActivity() {
             val password = passwordInput.text.toString()
             val esPrestador = prestadorSwitch.isChecked
 
+            val imagenBase64 = if (selectedImageUri != null) {
+                convertImageToBase64(selectedImageUri!!)
+            } else {
+                ""
+            }
 
             val params = JSONObject()
             params.put("nombre", nombre)
@@ -56,9 +102,11 @@ class registro : AppCompatActivity() {
             params.put("username", username)
             params.put("password", password)
             params.put("esPrestador", esPrestador)
+            params.put("imagenBase64", imagenBase64) // Agregar la imagen en Base64 al JSON
+
 
             // URL del servidor donde está el script PHP para manejar la solicitud POST
-            val url = "http://192.168.31.198/servinear/procesar_registro.php"
+            val url = "http://192.168.31.198/servinear/p2.php"
 
             // Crear una solicitud POST utilizando Volley
             val request = object : StringRequest(
@@ -86,35 +134,14 @@ class registro : AppCompatActivity() {
             // Agregar la solicitud a la cola de Volley para que se envíe
             Volley.newRequestQueue(this).add(request)
         }
+    }
 
-
-
-        /*
-        val btn: Button = findViewById(R.id.iniciar_btn)
-
-        val btn1: Button = findViewById(R.id.register_btn)
-
-        btn1.setOnClickListener {
-
-            val intent: Intent = Intent(this, inicio:: class.java)
-            startActivity(intent)
-            finish()
-
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Permiso concedido", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
         }
-
-        btn.setOnClickListener {
-
-            val intent: Intent = Intent(this, inicio_sesion:: class.java)
-            startActivity(intent)
-            finish()
-
-        }
-
-        */
-
-
-
-
-
     }
 }
