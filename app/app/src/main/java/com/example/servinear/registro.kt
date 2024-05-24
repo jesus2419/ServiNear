@@ -1,6 +1,8 @@
 package com.example.servinear
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -15,7 +17,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -40,6 +41,17 @@ class registro : AppCompatActivity() {
         uri?.let {
             selectedImageUri = it
             imageView.setImageURI(it)
+
+            // Verificar tamaño de la imagen seleccionada
+            val inputStream: InputStream? = contentResolver.openInputStream(it)
+            val bytes: ByteArray? = inputStream?.readBytes()
+            bytes?.let {
+                if (it.size > 60 * 1024) { // Verificar si el tamaño supera los 60 KB
+                    selectedImageUri = null
+                    imageView.setImageResource(android.R.color.transparent)
+                    Toast.makeText(this, "La imagen no puede pesar más de 60 KB", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -89,51 +101,111 @@ class registro : AppCompatActivity() {
             val password = passwordInput.text.toString()
             val esPrestador = prestadorSwitch.isChecked
 
+            // Verificar si hay campos vacíos
+            if (nombre.isEmpty() || apellidos.isEmpty() || correo.isEmpty() || username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Verificar si se ha seleccionado una imagen y si su tamaño es válido
+            if (selectedImageUri == null) {
+                Toast.makeText(this, "Seleccione una imagen", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+
             val imagenBase64 = if (selectedImageUri != null) {
                 convertImageToBase64(selectedImageUri!!)
             } else {
                 ""
             }
 
-            val params = JSONObject()
-            params.put("nombre", nombre)
-            params.put("apellidos", apellidos)
-            params.put("correo", correo)
-            params.put("username", username)
-            params.put("password", password)
-            params.put("esPrestador", esPrestador)
-            params.put("imagenBase64", imagenBase64) // Agregar la imagen en Base64 al JSON
-
-
-            // URL del servidor donde está el script PHP para manejar la solicitud POST
-            val url = "http://192.168.31.198/servinear/p2.php"
-
-            // Crear una solicitud POST utilizando Volley
-            val request = object : StringRequest(
-                Request.Method.POST, url,
-                Response.Listener { response ->
-                    // Manejar la respuesta del servidor si es necesario
-                    Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                },
-                Response.ErrorListener { error ->
-                    // Manejar errores de la solicitud
-                    val errorMessage = "Error al registrar: ${error.message}"
-                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
-                    Log.e("RegistroActivity", errorMessage)
-                }) {
-                override fun getParams(): Map<String, String> {
-                    // Convertir el objeto JSONObject a un Map<String, String>
-                    val paramsMap = HashMap<String, String>()
-                    for (key in params.keys()) {
-                        paramsMap[key] = params.getString(key)
-                    }
-                    return paramsMap
+            // Verificar si el nombre de usuario ya está registrado
+            verificarUsuarioExistente(username) { existe ->
+                if (existe) {
+                    Toast.makeText(this, "El nombre de usuario ya está registrado", Toast.LENGTH_SHORT).show()
+                } else {
+                    registrarUsuario(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
                 }
             }
-
-            // Agregar la solicitud a la cola de Volley para que se envíe
-            Volley.newRequestQueue(this).add(request)
         }
+    }
+
+    private fun verificarUsuarioExistente(username: String, callback: (Boolean) -> Unit) {
+        val url = "http://192.168.31.198/servinear/verificar_usuario.php"
+        val request = object : StringRequest(
+            Method.POST, url,
+            Response.Listener { response ->
+                callback(response.toBoolean())
+            },
+            Response.ErrorListener { error ->
+                Toast.makeText(this, "Error al verificar el usuario: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.e("RegistroActivity", "Error al verificar el usuario: ${error.message}")
+                callback(false)
+            }) {
+            override fun getParams(): Map<String, String> {
+                return mapOf("username" to username)
+            }
+        }
+
+        Volley.newRequestQueue(this).add(request)
+    }
+
+    private fun registrarUsuario(nombre: String, apellidos: String, correo: String, username: String, password: String, esPrestador: Boolean, imagenBase64: String) {
+        val params = JSONObject()
+        params.put("nombre", nombre)
+        params.put("apellidos", apellidos)
+        params.put("correo", correo)
+        params.put("username", username)
+        params.put("password", password)
+        params.put("esPrestador", esPrestador)
+        params.put("imagenBase64", imagenBase64)
+
+        val url = "http://192.168.31.198/servinear/p2.php"
+        val request = object : StringRequest(
+            Method.POST, url,
+            Response.Listener { response ->
+                Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
+
+                // Guardar los datos en SharedPreferences
+                val sharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+
+                editor.putString("nombre", nombre)
+                editor.putString("apellidos", apellidos)
+                editor.putString("correo", correo)
+                editor.putString("username", username)
+                editor.putString("password", password)
+                editor.putBoolean("esPrestador", esPrestador)
+                editor.putString("imagenBase64", imagenBase64)
+
+                // Confirmar los cambios
+                editor.apply()
+
+                // Decidir a qué actividad dirigir al usuario
+                if (esPrestador) {
+                    val intent = Intent(this, registrar_servicio::class.java)
+                    startActivity(intent)
+                } else {
+                    val intent = Intent(this, inicio::class.java)
+                    startActivity(intent)
+                }
+                finish()
+            },
+            Response.ErrorListener { error ->
+                Toast.makeText(this, "Error al registrar: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.e("RegistroActivity", "Error al registrar: ${error.message}")
+            }) {
+            override fun getParams(): Map<String, String> {
+                val paramsMap = HashMap<String, String>()
+                for (key in params.keys()) {
+                    paramsMap[key] = params.getString(key)
+                }
+                return paramsMap
+            }
+        }
+
+        Volley.newRequestQueue(this).add(request)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

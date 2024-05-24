@@ -7,20 +7,21 @@
     android:background="@drawable/login_background"
     android:gravity="center"
     android:padding="16dp"
-    tools:context=".registro">
+    tools:context=".registrar_servicio">
+
+
+
 
     <LinearLayout
+        android:id="@+id/servicios_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
         tools:ignore="MissingConstraints">
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/icon_account_circle"
-            />
+
         <EditText
+            android:id="@+id/nombre_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nombre del servicio"
@@ -30,9 +31,10 @@
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
             android:inputType="text"
-            android:id="@+id/nombre_input"
             android:layout_marginBottom="16dp"/>
+
         <EditText
+            android:id="@+id/descripcion_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Descripcion del servicio"
@@ -42,26 +44,50 @@
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
             android:inputType="text"
-            android:id="@+id/apellidos_input"
             android:layout_marginBottom="16dp"/>
+
         <EditText
+            android:id="@+id/informacion_input"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:hint="Precios"
+            android:layout_height="wrap_content"
+            android:hint="Informacion de contacto"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             android:textSize="20sp"
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
             android:inputType="text"
-            android:id="@+id/correo_inout"
             android:layout_marginBottom="16dp"/>
 
+        <EditText
+            android:id="@+id/precio_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Precio por hora"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="20sp"
+            android:background="@drawable/rounded_corner"
+            android:padding="18dp"
+            android:inputType="numberDecimal"
+            android:layout_marginBottom="16dp" />
 
-
-
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/icon_account_circle"
+            android:layout_marginBottom="16dp"/>
 
         <Button
+            android:id="@+id/select_image_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seleccionar Imagen de servicio"
+            android:layout_marginTop="16dp"/>
+
+        <Button
+            android:id="@+id/register_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Registrar servicio"
@@ -69,12 +95,8 @@
             android:textColor="#3B84F1"
             android:padding="18dp"
             android:layout_marginTop="32dp"
-            android:textSize="20sp"
-            android:id="@+id/register_btn"/>
-
-
+            android:textSize="20sp"/>
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
