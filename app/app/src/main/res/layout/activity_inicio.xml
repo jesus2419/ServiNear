@@ -18,6 +18,13 @@
         android:layout_height="wrap_content"
         android:queryHint="Buscar..."
         android:iconifiedByDefault="false" />
+
+    <!-- Contenedor donde se agregarán dinámicamente los usuarios -->
+    <LinearLayout
+        android:id="@+id/usuarios_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"/>
     <!-- Contenedor 1 -->
     <LinearLayout
         android:layout_width="match_parent"
