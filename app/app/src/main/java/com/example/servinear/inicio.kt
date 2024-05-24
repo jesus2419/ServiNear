@@ -22,15 +22,15 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class inicio : AppCompatActivity() {
-    private lateinit var usuariosContainer: LinearLayout
+    private lateinit var serviciosContainer: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inicio)
-        usuariosContainer = findViewById(R.id.usuarios_container)
+        serviciosContainer  = findViewById(R.id.usuarios_container)
 
-        // Hacer la solicitud HTTP
-        val url = "http://192.168.31.198/servinear/obtener_usuarios.php"
+        // Hacer la solicitud HTTP para obtener los servicios
+        val url = "http://192.168.31.198/servinear/obtener_servicios.php"
         val queue: RequestQueue = Volley.newRequestQueue(this)
         val jsonArrayRequest = JsonArrayRequest(
             Request.Method.GET, url, null,
@@ -38,27 +38,27 @@ class inicio : AppCompatActivity() {
                 try {
                     // Verificar si la respuesta contiene datos válidos
                     if (response.length() > 0) {
-                        Log.d("Usuarios", "Número de usuarios recibidos: ${response.length()}")
+                        Log.d("Servicios", "Número de servicios recibidos: ${response.length()}")
                         for (i in 0 until response.length()) {
-                            val usuario = response.getJSONObject(i)
-                            Log.d("Usuario", usuario.toString())
+                            val servicio = response.getJSONObject(i)
+                            Log.d("Servicio", servicio.toString())
 
-                            // Obtener los datos del usuario
-                            val nombre = usuario.getString("Nombre")
-                            val apellidos = usuario.getString("Apellidos")
-                            val imagenBase64 = usuario.getString("Foto")
+                            // Obtener los datos del servicio
+                            val nombre = servicio.getString("Nombre")
+                            val descripcion = servicio.getString("descripcion")
+                            val imagenBase64 = servicio.getString("Foto")
 
                             // Decodificar la imagen de base64 a Bitmap
                             val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                             if (imagenBitmap != null) {
-                                // Mostrar el usuario en la interfaz
-                                mostrarUsuario(nombre, apellidos, imagenBitmap)
+                                // Mostrar el servicio en la interfaz
+                                mostrarServicio(nombre, descripcion, imagenBitmap)
                             } else {
                                 Log.e("DecodeError", "Error al decodificar la imagen base64")
                             }
                         }
                     } else {
-                        showErrorToast("No se encontraron usuarios")
+                        showErrorToast("No se encontraron servicios")
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -74,15 +74,15 @@ class inicio : AppCompatActivity() {
         queue.add(jsonArrayRequest)
     }
 
-    private fun mostrarUsuario(nombre: String, apellidos: String, imagen: Bitmap) {
-        // Crear un nuevo contenedor para el usuario
-        val usuarioLayout = LinearLayout(this)
-        usuarioLayout.orientation = LinearLayout.HORIZONTAL
-        usuarioLayout.layoutParams = LinearLayout.LayoutParams(
+    private fun mostrarServicio(nombre: String, descripcion: String, imagen: Bitmap) {
+        // Crear un nuevo contenedor para el servicio
+        val servicioLayout = LinearLayout(this)
+        servicioLayout.orientation = LinearLayout.HORIZONTAL
+        servicioLayout.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        usuarioLayout.setPadding(0, 0, 0, dpToPx(16))  // Agregar padding inferior
+        servicioLayout.setPadding(0, 0, 0, dpToPx(16))  // Agregar padding inferior
 
         // ImageView para mostrar la imagen
         val imageView = ImageView(this)
@@ -92,7 +92,7 @@ class inicio : AppCompatActivity() {
         )
         imageView.setImageBitmap(imagen)
 
-        // Layout para los datos de nombre y apellidos
+        // Layout para los datos de nombre y descripción
         val datosLayout = LinearLayout(this)
         datosLayout.orientation = LinearLayout.VERTICAL
         datosLayout.layoutParams = LinearLayout.LayoutParams(
@@ -111,26 +111,26 @@ class inicio : AppCompatActivity() {
         nombreTextView.textSize = 20f  // Tamaño del texto grande
         nombreTextView.setTextColor(resources.getColor(R.color.white))  // Color del texto blanco
 
-        // TextView para los apellidos
-        val apellidosTextView = TextView(this)
-        apellidosTextView.layoutParams = LinearLayout.LayoutParams(
+        // TextView para la descripción
+        val descripcionTextView = TextView(this)
+        descripcionTextView.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        apellidosTextView.text = apellidos
-        apellidosTextView.textSize = 16f  // Tamaño del texto mediano
-        apellidosTextView.setTextColor(resources.getColor(R.color.white))  // Color del texto blanco
+        descripcionTextView.text = descripcion
+        descripcionTextView.textSize = 16f  // Tamaño del texto mediano
+        descripcionTextView.setTextColor(resources.getColor(R.color.white))  // Color del texto blanco
 
         // Agregar los TextView al layout de datos
         datosLayout.addView(nombreTextView)
-        datosLayout.addView(apellidosTextView)
+        datosLayout.addView(descripcionTextView)
 
-        // Agregar la imagen y los datos al layout del usuario
-        usuarioLayout.addView(imageView)
-        usuarioLayout.addView(datosLayout)
+        // Agregar la imagen y los datos al layout del servicio
+        servicioLayout.addView(imageView)
+        servicioLayout.addView(datosLayout)
 
-        // Agregar el layout del usuario al contenedor principal
-        usuariosContainer.addView(usuarioLayout)
+        // Agregar el layout del servicio al contenedor principal
+        serviciosContainer.addView(servicioLayout)
     }
 
     private fun dpToPx(dp: Int): Int {
