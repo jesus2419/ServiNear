@@ -1,11 +1,15 @@
 package com.example.servinear
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.util.TypedValue
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -18,32 +22,44 @@ import com.android.volley.TimeoutError
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
 class inicio : AppCompatActivity() {
     private lateinit var serviciosContainer: LinearLayout
+    private lateinit var perfilBtn: Button
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inicio)
         serviciosContainer  = findViewById(R.id.usuarios_container)
+        perfilBtn = findViewById(R.id.perfil_btn)
+        // Inicialización de SharedPreferences
+        sharedPreferences = getSharedPreferences("DatosServicios", Context.MODE_PRIVATE)
 
-        // Hacer la solicitud HTTP para obtener los servicios
+
+        perfilBtn.setOnClickListener {
+            val intent = Intent(this, Perfil::class.java)
+            startActivity(intent)
+        }
+
+        // Intentar cargar los servicios desde la base de datos remota
+        obtenerServiciosDesdeServidor()
+    }
+
+    private fun obtenerServiciosDesdeServidor() {
         val url = "http://192.168.31.198/servinear/obtener_servicios.php"
         val queue: RequestQueue = Volley.newRequestQueue(this)
         val jsonArrayRequest = JsonArrayRequest(
             Request.Method.GET, url, null,
             Response.Listener { response ->
                 try {
-                    // Verificar si la respuesta contiene datos válidos
                     if (response.length() > 0) {
                         Log.d("Servicios", "Número de servicios recibidos: ${response.length()}")
                         for (i in 0 until response.length()) {
                             val servicio = response.getJSONObject(i)
-                            Log.d("Servicio", servicio.toString())
-
-                            // Obtener los datos del servicio
                             val nombre = servicio.getString("Nombre")
                             val descripcion = servicio.getString("descripcion")
                             val imagenBase64 = servicio.getString("Foto")
@@ -59,19 +75,57 @@ class inicio : AppCompatActivity() {
                         }
                     } else {
                         showErrorToast("No se encontraron servicios")
+                        // Intentar cargar servicios locales si no hay datos remotos
+                        cargarServiciosLocales()
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
                     showErrorToast("Error al procesar la respuesta del servidor")
+                    // Intentar cargar servicios locales en caso de error
+                    cargarServiciosLocales()
                 }
             },
             Response.ErrorListener { error ->
                 handleVolleyError(error)
+                // Intentar cargar servicios locales en caso de error
+                cargarServiciosLocales()
             }
         )
 
-        // Agregar la solicitud a la cola de solicitudes
         queue.add(jsonArrayRequest)
+    }
+
+    private fun cargarServiciosLocales() {
+        // Obtener la lista de servicios almacenada localmente
+        val serviciosJson = sharedPreferences.getString("servicios", "[]")
+        val serviciosArray = JSONArray(serviciosJson)
+
+        if (serviciosArray.length() > 0) {
+            Log.d("ServiciosLocales", "Número de servicios locales: ${serviciosArray.length()}")
+            try {
+                for (i in 0 until serviciosArray.length()) {
+                    val servicioData = serviciosArray.getJSONObject(i)
+
+                    val nombre = servicioData.getString("nombre")
+                    val descripcion = servicioData.getString("descripcion")
+                    val imagenBase64 = servicioData.getString("foto_base64")
+
+                    // Decodificar la imagen de base64 a Bitmap
+                    val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
+                    if (imagenBitmap != null) {
+                        // Mostrar el servicio en la interfaz
+                        mostrarServicio(nombre, descripcion, imagenBitmap)
+                    } else {
+                        Log.e("DecodeError", "Error al decodificar la imagen base64")
+                    }
+                }
+            } catch (e: JSONException) {
+                e.printStackTrace()
+                showErrorToast("Error al procesar los servicios locales")
+            }
+        } else {
+            showErrorToast("No se encontraron servicios locales")
+        }
     }
 
     private fun mostrarServicio(nombre: String, descripcion: String, imagen: Bitmap) {

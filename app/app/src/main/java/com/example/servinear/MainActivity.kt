@@ -1,13 +1,11 @@
 package com.example.servinear
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import java.util.Timer
 import java.util.TimerTask
-import java.util.*
-import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,7 +15,16 @@ class MainActivity : AppCompatActivity() {
 
         val timerTask: TimerTask = object : TimerTask() {
             override fun run() {
-                val intent = Intent(this@MainActivity, inicio_sesion::class.java)
+                // Verificar si existen datos en SharedPreferences
+                val sharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
+                val username = sharedPreferences.getString("username", null)
+                val intent = if (username != null) {
+                    // Si existe username, ir a inicio activity
+                    Intent(this@MainActivity, inicio::class.java)
+                } else {
+                    // Si no existe username, ir a inicio_sesion activity
+                    Intent(this@MainActivity, inicio_sesion::class.java)
+                }
                 startActivity(intent)
                 finish()
             }

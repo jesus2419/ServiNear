@@ -61,7 +61,7 @@
             android:textSize="20sp"
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
-            android:inputType="textEmailAddress"
+            android:inputType="text"
             android:id="@+id/correo_inout"
             />
         <EditText
@@ -115,8 +115,8 @@
 
 
                 android:layout_gravity="start"
-            android:layout_marginEnd="8dp"
-                 />
+                android:layout_marginEnd="8dp"
+                />
         </LinearLayout>
 
 

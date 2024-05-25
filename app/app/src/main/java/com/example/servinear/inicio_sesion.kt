@@ -99,7 +99,7 @@ class inicio_sesion : AppCompatActivity() {
 
         // Redireccionar a la pantalla de prueba (test)
         testBtn.setOnClickListener {
-            val intent = Intent(this@inicio_sesion, registrar_servicio::class.java)
+            val intent = Intent(this@inicio_sesion, prueba::class.java)
             startActivity(intent)
         }
     }

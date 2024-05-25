@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
@@ -69,6 +70,7 @@ class registro : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registro)
 
+
         // Obtener referencias a los EditText y otros elementos de la vista
         nombreInput = findViewById(R.id.nombre_input)
         apellidosInput = findViewById(R.id.apellidos_input)
@@ -93,42 +95,73 @@ class registro : AppCompatActivity() {
 
         // Agregar un listener al botón de registro
         registerButton.setOnClickListener {
-            // Obtener los valores de los EditText
-            val nombre = nombreInput.text.toString()
-            val apellidos = apellidosInput.text.toString()
-            val correo = correoInput.text.toString()
-            val username = usernameInput.text.toString()
-            val password = passwordInput.text.toString()
-            val esPrestador = prestadorSwitch.isChecked
-
-            // Verificar si hay campos vacíos
-            if (nombre.isEmpty() || apellidos.isEmpty() || correo.isEmpty() || username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Verificar si se ha seleccionado una imagen y si su tamaño es válido
-            if (selectedImageUri == null) {
-                Toast.makeText(this, "Seleccione una imagen", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-
-            val imagenBase64 = if (selectedImageUri != null) {
-                convertImageToBase64(selectedImageUri!!)
+            // Verificar conexión a Internet
+            if (isNetworkAvailable()) {
+                registrarUsuarioDesdeUI()
             } else {
-                ""
-            }
-
-            // Verificar si el nombre de usuario ya está registrado
-            verificarUsuarioExistente(username) { existe ->
-                if (existe) {
-                    Toast.makeText(this, "El nombre de usuario ya está registrado", Toast.LENGTH_SHORT).show()
-                } else {
-                    registrarUsuario(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
-                }
+                // Guardar datos localmente en caso de no tener conexión
+                guardarDatosLocalmenteDesdeUI()
             }
         }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
+    private fun registrarUsuarioDesdeUI() {
+        val nombre = nombreInput.text.toString()
+        val apellidos = apellidosInput.text.toString()
+        val correo = correoInput.text.toString()
+        val username = usernameInput.text.toString()
+        val password = passwordInput.text.toString()
+        val esPrestador = prestadorSwitch.isChecked
+
+        // Verificar si hay campos vacíos
+        if (nombre.isEmpty() || apellidos.isEmpty() || correo.isEmpty() || username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Verificar si se ha seleccionado una imagen y si su tamaño es válido
+        if (selectedImageUri == null) {
+            Toast.makeText(this, "Seleccione una imagen", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val imagenBase64 = if (selectedImageUri != null) {
+            convertImageToBase64(selectedImageUri!!)
+        } else {
+            ""
+        }
+
+        verificarUsuarioExistente(username) { existe ->
+            if (existe) {
+                Toast.makeText(this, "El nombre de usuario ya está registrado", Toast.LENGTH_SHORT).show()
+            } else {
+                registrarUsuario(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+            }
+        }
+    }
+
+    private fun guardarDatosLocalmenteDesdeUI() {
+        val nombre = nombreInput.text.toString()
+        val apellidos = apellidosInput.text.toString()
+        val correo = correoInput.text.toString()
+        val username = usernameInput.text.toString()
+        val password = passwordInput.text.toString()
+        val esPrestador = prestadorSwitch.isChecked
+
+        val imagenBase64 = if (selectedImageUri != null) {
+            convertImageToBase64(selectedImageUri!!)
+        } else {
+            ""
+        }
+
+        guardarDatosLocalmente(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+        dirigirActividadSegunTipoUsuario(esPrestador)
     }
 
     private fun verificarUsuarioExistente(username: String, callback: (Boolean) -> Unit) {
@@ -166,35 +199,15 @@ class registro : AppCompatActivity() {
             Method.POST, url,
             Response.Listener { response ->
                 Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-
-                // Guardar los datos en SharedPreferences
-                val sharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
-
-                editor.putString("nombre", nombre)
-                editor.putString("apellidos", apellidos)
-                editor.putString("correo", correo)
-                editor.putString("username", username)
-                editor.putString("password", password)
-                editor.putBoolean("esPrestador", esPrestador)
-                editor.putString("imagenBase64", imagenBase64)
-
-                // Confirmar los cambios
-                editor.apply()
-
-                // Decidir a qué actividad dirigir al usuario
-                if (esPrestador) {
-                    val intent = Intent(this, registrar_servicio::class.java)
-                    startActivity(intent)
-                } else {
-                    val intent = Intent(this, inicio::class.java)
-                    startActivity(intent)
-                }
-                finish()
+                guardarDatosLocalmente(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+                dirigirActividadSegunTipoUsuario(esPrestador)
             },
             Response.ErrorListener { error ->
                 Toast.makeText(this, "Error al registrar: ${error.message}", Toast.LENGTH_SHORT).show()
                 Log.e("RegistroActivity", "Error al registrar: ${error.message}")
+                // Guardar datos localmente en caso de fallo de conexión
+                guardarDatosLocalmente(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+                dirigirActividadSegunTipoUsuario(esPrestador)
             }) {
             override fun getParams(): Map<String, String> {
                 val paramsMap = HashMap<String, String>()
@@ -208,12 +221,30 @@ class registro : AppCompatActivity() {
         Volley.newRequestQueue(this).add(request)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Permiso concedido", Toast.LENGTH_SHORT).show()
+    private fun guardarDatosLocalmente(nombre: String, apellidos: String, correo: String, username: String, password: String, esPrestador: Boolean, imagenBase64: String) {
+        val sharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        editor.putString("nombre", nombre)
+        editor.putString("apellidos", apellidos)
+        editor.putString("correo", correo)
+        editor.putString("username", username)
+        editor.putString("password", password)
+        editor.putBoolean("esPrestador", esPrestador)
+        editor.putString("imagenBase64", imagenBase64)
+
+        // Confirmar los cambios
+        editor.apply()
+    }
+
+    private fun dirigirActividadSegunTipoUsuario(esPrestador: Boolean) {
+        if (esPrestador) {
+            val intent = Intent(this, registrar_servicio::class.java)
+            startActivity(intent)
         } else {
-            Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, inicio::class.java)
+            startActivity(intent)
         }
+        finish()
     }
 }
