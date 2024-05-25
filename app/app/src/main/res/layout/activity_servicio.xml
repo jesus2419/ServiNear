@@ -21,6 +21,7 @@
         android:layout_marginBottom="16dp">
 
         <ImageView
+            android:id="@+id/imagen_servicio_imageview"
             android:layout_width="120dp"
             android:layout_height="match_parent"
             android:contentDescription="Imagen 1"
@@ -33,6 +34,8 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/nombre_servicio_textview"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -47,15 +50,17 @@
                 android:layout_marginEnd="16dp"
                 android:textColor="@color/white"
                 android:textSize="15dp"
-                android:text="Usuario: Javier_2024"
+                android:text="Contacto"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
             <TextView
+                android:id="@+id/contacto_servicio_textview"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:textColor="@color/white"
                 android:textSize="15dp"
-                android:text="Recomendaciones 2.4k"
+                android:text="--"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
         </LinearLayout>
     </LinearLayout>
@@ -74,15 +79,13 @@
             android:textAppearance="?android:attr/textAppearanceLarge"/>
 
         <TextView
+            android:id="@+id/precio_hora_servicio_textview"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reparacion = $250 Por hora"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fabricación de muebles = $3,200 + Materiales"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -96,10 +99,12 @@
             android:layout_marginEnd="16dp"
             android:textColor="@color/white"
             android:textSize="20sp"
-            android:text="Direccion"
+            android:text="Descripcion"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
 
         <TextView
+            android:id="@+id/descripcion_servicio_textview"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="S/N Av. constitucion, Monterrey, N.L"
@@ -107,28 +112,7 @@
 
     </LinearLayout>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Chat"
-        android:backgroundTint="@color/white"
-        android:textColor="#3B84F1"
-        android:padding="18dp"
-        android:layout_marginTop="32dp"
-        android:textSize="20sp"
-        android:id="@+id/register_btn"/>
 
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Recomendar"
-        android:backgroundTint="@color/black"
-        android:textColor="#3B84F1"
-        android:padding="18dp"
-        android:layout_marginTop="32dp"
-        android:textSize="20sp"
-        android:id="@+id/iniciar_btn"/>
 
 
 

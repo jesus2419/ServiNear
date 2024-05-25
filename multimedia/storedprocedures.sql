@@ -21,3 +21,35 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+-- Definición del procedimiento almacenado
+DELIMITER //
+
+CREATE PROCEDURE InsertarServicio(
+    IN p_nombre VARCHAR(50),
+    IN p_descripcion VARCHAR(50),
+    IN p_contacto VARCHAR(50),
+    IN p_precio_hora VARCHAR(50),
+    IN p_foto_base64 BLOB,
+    IN p_nombre_usuario VARCHAR(50)
+)
+BEGIN
+    DECLARE v_id_usuario INT;
+    
+    -- Obtener el ID del usuario a partir del nombre de usuario
+    SELECT ID INTO v_id_usuario
+    FROM Usuarios
+    WHERE usuario = p_nombre_usuario;
+
+    -- Decodificar la imagen de base64 a BLOB
+   
+
+    -- Insertar el servicio
+    INSERT INTO servicio (id_usuario, Nombre, descripcion, contacto, precio_hora, Foto, Fecha_de_creacion, Estado)
+    VALUES (v_id_usuario, p_nombre, p_descripcion, p_contacto, p_precio_hora, p_foto_base64, NOW(), true);
+
+END //
+
+DELIMITER ;
+

@@ -48,6 +48,8 @@ class Perfil : AppCompatActivity() {
         // Configurar el listener para el botón de modificar cuenta
         modificarBtn.setOnClickListener {
             // Agrega la lógica para modificar la cuenta aquí
+            val intent = Intent(this, modificar::class.java)
+            startActivity(intent)
         }
 
         // Configurar el listener para el botón de cerrar sesión

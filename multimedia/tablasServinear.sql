@@ -29,6 +29,7 @@ CREATE TABLE Usuarios (
     FOREIGN KEY (id_rol) REFERENCES Rol(Id) -- Agregar la clave externa que referencia a la tabla Rol
 );
 
+SELECT Nombre, descripcion, Foto FROM servicio WHERE Estado = 1;
 
 CREATE TABLE servicio (
     ID INT AUTO_INCREMENT PRIMARY KEY,

@@ -24,7 +24,6 @@ class inicio_sesion : AppCompatActivity() {
     private lateinit var passwordInput: EditText
     private lateinit var loginBtn: Button
     private lateinit var registerBtn: Button
-    private lateinit var testBtn: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inicio_sesion)
@@ -32,7 +31,6 @@ class inicio_sesion : AppCompatActivity() {
         passwordInput = findViewById(R.id.password_input)
         loginBtn = findViewById(R.id.login_btn)
         registerBtn = findViewById(R.id.register_btn)
-        testBtn = findViewById(R.id.test_btn)
 
         // Iniciar sesión
         loginBtn.setOnClickListener {
@@ -53,15 +51,24 @@ class inicio_sesion : AppCompatActivity() {
                     try {
                         val jsonObject = JSONObject(response)
                         val success = jsonObject.getBoolean("success")
-                        val idUsuario = jsonObject.getInt("id")
 
                         if (success) {
                             // Guardar los datos en SharedPreferences
+                            val idUsuario = jsonObject.getInt("id")
+                            val nombre = jsonObject.getString("nombre")
+                            val apellidos = jsonObject.getString("apellidos")
+                            val correo = jsonObject.getString("correo")
+                            val imagenBase64 = jsonObject.getString("imagen")
+
                             val sharedPreferences: SharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
                             val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
                             editor.putString("username", username)
                             editor.putInt("idUsuario", idUsuario)
+                            editor.putString("nombre", nombre)
+                            editor.putString("apellidos", apellidos)
+                            editor.putString("correo", correo)
+                            editor.putString("imagenBase64", imagenBase64)
                             editor.apply()
 
                             // Iniciar la pantalla de inicio
@@ -97,11 +104,7 @@ class inicio_sesion : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Redireccionar a la pantalla de prueba (test)
-        testBtn.setOnClickListener {
-            val intent = Intent(this@inicio_sesion, prueba::class.java)
-            startActivity(intent)
-        }
+
     }
 
     private fun handleVolleyError(error: VolleyError) {

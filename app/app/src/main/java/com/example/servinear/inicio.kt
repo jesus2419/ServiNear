@@ -25,6 +25,7 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 
 class inicio : AppCompatActivity() {
     private lateinit var serviciosContainer: LinearLayout
@@ -62,13 +63,16 @@ class inicio : AppCompatActivity() {
                             val servicio = response.getJSONObject(i)
                             val nombre = servicio.getString("Nombre")
                             val descripcion = servicio.getString("descripcion")
+                            val contacto = servicio.getString("contacto")
+                            val precio_hora = servicio.getString("precio_hora")
+
                             val imagenBase64 = servicio.getString("Foto")
 
                             // Decodificar la imagen de base64 a Bitmap
                             val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                             if (imagenBitmap != null) {
                                 // Mostrar el servicio en la interfaz
-                                mostrarServicio(nombre, descripcion, imagenBitmap)
+                                mostrarServicio(nombre, descripcion,contacto,precio_hora, imagenBitmap)
                             } else {
                                 Log.e("DecodeError", "Error al decodificar la imagen base64")
                             }
@@ -108,13 +112,15 @@ class inicio : AppCompatActivity() {
 
                     val nombre = servicioData.getString("nombre")
                     val descripcion = servicioData.getString("descripcion")
+                    val contacto = servicioData.getString("contacto")
+                    val precio_hora = servicioData.getString("precio_hora")
                     val imagenBase64 = servicioData.getString("foto_base64")
 
                     // Decodificar la imagen de base64 a Bitmap
                     val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                     if (imagenBitmap != null) {
                         // Mostrar el servicio en la interfaz
-                        mostrarServicio(nombre, descripcion, imagenBitmap)
+                        mostrarServicio(nombre, descripcion,contacto,precio_hora, imagenBitmap)
                     } else {
                         Log.e("DecodeError", "Error al decodificar la imagen base64")
                     }
@@ -128,7 +134,7 @@ class inicio : AppCompatActivity() {
         }
     }
 
-    private fun mostrarServicio(nombre: String, descripcion: String, imagen: Bitmap) {
+    private fun mostrarServicio(nombre: String, descripcion: String, contacto: String, precio_hora: String, imagen: Bitmap) {
         // Crear un nuevo contenedor para el servicio
         val servicioLayout = LinearLayout(this)
         servicioLayout.orientation = LinearLayout.HORIZONTAL
@@ -137,6 +143,23 @@ class inicio : AppCompatActivity() {
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
         servicioLayout.setPadding(0, 0, 0, dpToPx(16))  // Agregar padding inferior
+        servicioLayout.isClickable = true  // Hacer el layout clickable
+
+        servicioLayout.setOnClickListener {
+            // Convertir la imagen a ByteArray
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            imagen.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+            val byteArray = byteArrayOutputStream.toByteArray()
+
+            // Abrir la actividad de detalle del servicio
+            val intent = Intent(this, servicio::class.java)
+            intent.putExtra("nombre", nombre)
+            intent.putExtra("descripcion", descripcion)
+            intent.putExtra("contacto", contacto)
+            intent.putExtra("precio_hora", precio_hora)
+            intent.putExtra("imagen", byteArray)  // Pasar el ByteArray en lugar del Bitmap
+            startActivity(intent)
+        }
 
         // ImageView para mostrar la imagen
         val imageView = ImageView(this)
