@@ -50,6 +50,9 @@ dependencies {
 
     implementation ("com.android.volley:volley:1.2.1")
 
+    implementation ("net.sourceforge.jtds:jtds:1.3.1")
+    implementation ("com.microsoft.sqlserver:mssql-jdbc:9.4.0.jre8")
+
 
 
 }
