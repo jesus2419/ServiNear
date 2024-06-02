@@ -165,7 +165,8 @@ class registro : AppCompatActivity() {
     }
 
     private fun verificarUsuarioExistente(username: String, callback: (Boolean) -> Unit) {
-        val url = "http://192.168.31.198/servinear/verificar_usuario.php"
+        //val url = "http://192.168.31.198/servinear/verificar_usuario.php"
+        val url = "http://74.235.95.67/api/verificar_usuario.php"
         val request = object : StringRequest(
             Method.POST, url,
             Response.Listener { response ->
@@ -194,7 +195,8 @@ class registro : AppCompatActivity() {
         params.put("esPrestador", esPrestador)
         params.put("imagenBase64", imagenBase64)
 
-        val url = "http://192.168.31.198/servinear/p2.php"
+        //val url = "http://192.168.31.198/servinear/p2.php"
+        val url = "http://74.235.95.67/api/p2.php"
         val request = object : StringRequest(
             Method.POST, url,
             Response.Listener { response ->

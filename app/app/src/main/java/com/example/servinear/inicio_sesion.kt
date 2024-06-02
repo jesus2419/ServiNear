@@ -43,7 +43,8 @@ class inicio_sesion : AppCompatActivity() {
             }
 
             // Realizar la petición al servidor
-            val url = "http://192.168.31.198/servinear/login_usuario.php"
+            //val url = "http://192.168.31.198/servinear/login_usuario.php"
+            val url = "http://74.235.95.67/api/login_usuario.php"
             val queue: RequestQueue = Volley.newRequestQueue(this@inicio_sesion)
             val request = object : StringRequest(
                 Request.Method.POST, url,
@@ -116,6 +117,6 @@ class inicio_sesion : AppCompatActivity() {
             else -> "Error al conectar con el servidor."
         }
 
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
     }
 }
