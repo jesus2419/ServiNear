@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
                 val username = sharedPreferences.getString("username", null)
                 val intent = if (username != null) {
                     // Si existe username, ir a inicio activity
-                    Intent(this@MainActivity, inicio::class.java)
+                    Intent(this@MainActivity, MainActivity2::class.java)
                 } else {
                     // Si no existe username, ir a inicio_sesion activity
                     Intent(this@MainActivity, inicio_sesion::class.java)

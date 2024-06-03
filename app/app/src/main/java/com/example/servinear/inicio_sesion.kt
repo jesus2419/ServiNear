@@ -2,6 +2,7 @@ package com.example.servinear
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -61,20 +62,20 @@ class inicio_sesion : AppCompatActivity() {
                         if (success) {
                             // Obtener datos del usuario
                             val pass = jsonObject.getString("pass")
-                            val rol = jsonObject.getString("rol")
+                            val rol = jsonObject.getString("rol").toInt()
                             val nombre = jsonObject.getString("nombre")
                             val apellidos = jsonObject.getString("apellidos")
                             val correo = jsonObject.getString("correo")
                             val imagenBase64 = jsonObject.getString("imagen")
 
-                            val esprestador = false
 
-                            if (rol == "2"){ //Es prestador de servicio
-                                val esprestador = true
-                            }else{ //usuario normal
-                                val esprestador = false
+                            val esprestador = rol == 2
 
-                            }
+                            Log.d("Perfil", "es prestador: ${esprestador}")
+
+                            Log.d("Perfil", "es rol: ${rol}")
+
+
 
                             // Crear objeto User
                             val user = User( nombre, apellidos, correo, username, pass, esprestador, imagenBase64)

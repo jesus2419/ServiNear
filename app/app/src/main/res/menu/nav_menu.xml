@@ -15,10 +15,20 @@
             android:id="@+id/nav_perfil"
             android:icon="@drawable/baseline_person_24"
             android:title="Modificar perfil"/>
+
         <item
             android:id="@+id/nav_info"
             android:icon="@drawable/baseline_info_24"
             android:title="Info"/>
+        <item
+            android:id="@+id/nav_servicio"
+            android:icon="@drawable/baseline_servicio_24"
+            android:title="Ver mis Servicios"/>
+
+        <item
+            android:id="@+id/nav_agregarservicio"
+            android:icon="@drawable/baseline_add_box_24"
+            android:title="Agregar nuevo Servicio"/>
 
 
     </group>

@@ -2,6 +2,9 @@ package com.example.servinear
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 
 data class User(
     val nombre: String,
@@ -59,6 +62,16 @@ class UserManager private constructor(context: Context) {
         with(sharedPreferences.edit()) {
             clear()
             apply()
+        }
+    }
+
+    fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
+        return try {
+            val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            null
         }
     }
 }

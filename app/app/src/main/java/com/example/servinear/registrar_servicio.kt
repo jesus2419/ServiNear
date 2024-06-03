@@ -1,25 +1,30 @@
 package com.example.servinear
 
+import android.Manifest
 import android.content.Context
-import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
 
 class registrar_servicio : AppCompatActivity() {
 
@@ -31,12 +36,34 @@ class registrar_servicio : AppCompatActivity() {
     private lateinit var selectImageBtn: Button
     private lateinit var registerBtn: Button
 
-    private var imagenBase64: String? = null
+    private var selectedImageUri: Uri? = null
     private var idUsuario: Int = -1
+
+    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            selectedImageUri = it
+            imageView.setImageURI(it)
+
+            // Verificar tamaño de la imagen seleccionada y comprimirla
+            val inputStream: InputStream? = contentResolver.openInputStream(it)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            bitmap?.let {
+                val resizedBitmap = resizeBitmap(it, 800, 800)
+                val compressedBitmap = compressBitmap(resizedBitmap, 60 * 1024)
+                compressedBitmap?.let { compressed ->
+                    imageView.setImageBitmap(compressed)
+                } ?: run {
+                    selectedImageUri = null
+                    imageView.setImageResource(android.R.color.transparent)
+                    Toast.makeText(this, "La imagen no puede pesar más de 60 KB", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registrar_servicio)
-
 
         // Inicializar vistas
         nombreInput = findViewById(R.id.nombre_input)
@@ -56,12 +83,18 @@ class registrar_servicio : AppCompatActivity() {
 
         // Botón para seleccionar imagen
         selectImageBtn.setOnClickListener {
-            seleccionarImagen()
+            pickImage.launch("image/*")
         }
 
         // Botón para registrar servicio
         registerBtn.setOnClickListener {
             registrarServicio()
+        }
+
+        // Solicitar permiso de lectura de almacenamiento
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         }
     }
 
@@ -87,12 +120,6 @@ class registrar_servicio : AppCompatActivity() {
         Volley.newRequestQueue(this).add(request)
     }
 
-    private fun seleccionarImagen() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        startActivityForResult(intent, REQUEST_SELECT_IMAGE)
-    }
-
     private fun registrarServicio() {
         val nombre = nombreInput.text.toString().trim()
         val descripcion = descripcionInput.text.toString().trim()
@@ -104,7 +131,7 @@ class registrar_servicio : AppCompatActivity() {
             return
         }
 
-        if (imagenBase64.isNullOrEmpty()) {
+        if (selectedImageUri == null) {
             Toast.makeText(this, "Selecciona una imagen de servicio", Toast.LENGTH_SHORT).show()
             return
         }
@@ -115,6 +142,7 @@ class registrar_servicio : AppCompatActivity() {
         }
 
         // Preparar la imagen para ser enviada al servidor
+        val imagenBase64 = convertImageToBase64(selectedImageUri!!)
         val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
 
         // Realizar la solicitud HTTP para insertar el servicio
@@ -135,7 +163,7 @@ class registrar_servicio : AppCompatActivity() {
                     "descripcion" to descripcion,
                     "informacion" to informacion,
                     "precio" to precio,
-                    "foto_base64" to imagenBase64!!,
+                    "foto_base64" to imagenBase64,
                     "fecha_creacion" to currentDate,
                     "estado" to "1" // Suponemos que el estado es 1 por defecto (activo)
                 )
@@ -151,34 +179,51 @@ class registrar_servicio : AppCompatActivity() {
         informacionInput.text.clear()
         precioInput.text.clear()
         imageView.setImageResource(R.drawable.icon_account_circle)
-        imagenBase64 = null
+        selectedImageUri = null
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private fun resizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+        val aspectRatio = width.toFloat() / height.toFloat()
 
-        if (requestCode == REQUEST_SELECT_IMAGE && resultCode == RESULT_OK) {
-            val selectedImageUri = data?.data
-            selectedImageUri?.let {
-                val inputStream = contentResolver.openInputStream(it)
-                val bitmap = BitmapFactory.decodeStream(inputStream)
+        val newWidth: Int
+        val newHeight: Int
+        if (width > height) {
+            newWidth = maxWidth
+            newHeight = (newWidth / aspectRatio).toInt()
+        } else {
+            newHeight = maxHeight
+            newWidth = (newHeight * aspectRatio).toInt()
+        }
 
-                if (bitmap != null) {
-                    imageView.setImageBitmap(bitmap)
-                    imagenBase64 = bitmapToBase64(bitmap)
-                }
-            }
+        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+    }
+
+    private fun compressBitmap(bitmap: Bitmap, maxSize: Int): Bitmap? {
+        var quality = 100
+        var byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
+
+        while (byteArrayOutputStream.size() > maxSize && quality > 0) {
+            quality -= 5
+            byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
+        }
+
+        return if (byteArrayOutputStream.size() <= maxSize) {
+            BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.size())
+        } else {
+            null
         }
     }
 
-    private fun bitmapToBase64(bitmap: Bitmap): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
-    }
-
-    companion object {
-        private const val REQUEST_SELECT_IMAGE = 100
+    private fun convertImageToBase64(uri: Uri): String {
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+        val bytes: ByteArray? = inputStream?.readBytes()
+        bytes?.let {
+            return Base64.encodeToString(it, Base64.DEFAULT)
+        }
+        return ""
     }
 }

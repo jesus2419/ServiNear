@@ -194,6 +194,9 @@ class registro : AppCompatActivity() {
         params.put("esPrestador", esPrestador)
         params.put("imagenBase64", imagenBase64)
 
+
+        Log.d("Perfil", "es prestador: ${esPrestador}")
+
         //val url = "http://192.168.31.198/servinear/p2.php"
         val url = "http://74.235.95.67/api/p2.php"
         val request = object : StringRequest(
