@@ -110,12 +110,19 @@
             android:text="S/N Av. constitucion, Monterrey, N.L"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
+
     </LinearLayout>
 
-
-
-
-
+    <Button
+        android:id="@+id/chat_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="@color/black"
+        android:padding="18dp"
+        android:text="Chat"
+        android:textColor="#3B84F1"
+        android:textSize="20sp" />
 
 
 </LinearLayout>

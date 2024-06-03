@@ -1,8 +1,6 @@
 package com.example.servinear
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -18,7 +16,6 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
 
-
 class inicio_sesion : AppCompatActivity() {
     private lateinit var usernameInput: EditText
     private lateinit var passwordInput: EditText
@@ -26,15 +23,19 @@ class inicio_sesion : AppCompatActivity() {
     private lateinit var registerBtn: Button
     private lateinit var testBtn: Button
 
+    private lateinit var userManager: UserManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inicio_sesion)
+
         usernameInput = findViewById(R.id.username_input)
         passwordInput = findViewById(R.id.password_input)
         loginBtn = findViewById(R.id.login_btn)
         registerBtn = findViewById(R.id.register_btn)
         testBtn = findViewById(R.id.test_btn)
 
+        userManager = UserManager.getInstance(this)
 
         // Iniciar sesión
         loginBtn.setOnClickListener {
@@ -58,26 +59,31 @@ class inicio_sesion : AppCompatActivity() {
                         val success = jsonObject.getBoolean("success")
 
                         if (success) {
-                            // Guardar los datos en SharedPreferences
-                            val idUsuario = jsonObject.getInt("id")
+                            // Obtener datos del usuario
+                            val pass = jsonObject.getString("pass")
+                            val rol = jsonObject.getString("rol")
                             val nombre = jsonObject.getString("nombre")
                             val apellidos = jsonObject.getString("apellidos")
                             val correo = jsonObject.getString("correo")
                             val imagenBase64 = jsonObject.getString("imagen")
 
-                            val sharedPreferences: SharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
-                            val editor: SharedPreferences.Editor = sharedPreferences.edit()
+                            val esprestador = false
 
-                            editor.putString("username", username)
-                            editor.putInt("idUsuario", idUsuario)
-                            editor.putString("nombre", nombre)
-                            editor.putString("apellidos", apellidos)
-                            editor.putString("correo", correo)
-                            editor.putString("imagenBase64", imagenBase64)
-                            editor.apply()
+                            if (rol == "2"){ //Es prestador de servicio
+                                val esprestador = true
+                            }else{ //usuario normal
+                                val esprestador = false
+
+                            }
+
+                            // Crear objeto User
+                            val user = User( nombre, apellidos, correo, username, pass, esprestador, imagenBase64)
+
+                            // Guardar los datos en UserManager
+                            userManager.saveUser(user)
 
                             // Iniciar la pantalla de inicio
-                            val intent = Intent(this@inicio_sesion, inicio::class.java)
+                            val intent = Intent(this@inicio_sesion, MainActivity2::class.java)
                             startActivity(intent)
                             finish()
                         } else {
@@ -114,8 +120,6 @@ class inicio_sesion : AppCompatActivity() {
             val intent = Intent(this@inicio_sesion, MainActivity2::class.java)
             startActivity(intent)
         }
-
-
     }
 
     private fun handleVolleyError(error: VolleyError) {
@@ -127,6 +131,6 @@ class inicio_sesion : AppCompatActivity() {
             else -> "Error al conectar con el servidor."
         }
 
-        //Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
     }
 }

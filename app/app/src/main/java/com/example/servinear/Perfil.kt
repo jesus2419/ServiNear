@@ -1,10 +1,6 @@
 package com.example.servinear
 
-
-
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -15,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
-
 class Perfil : AppCompatActivity() {
     private lateinit var userImage: ImageView
     private lateinit var username: TextView
@@ -24,9 +19,7 @@ class Perfil : AppCompatActivity() {
     private lateinit var lastName: TextView
     private lateinit var modificarBtn: Button
     private lateinit var servicioBtn: Button
-
     private lateinit var cerrarBtn: Button
-    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +33,7 @@ class Perfil : AppCompatActivity() {
         lastName = findViewById(R.id.last_name)
         modificarBtn = findViewById(R.id.modificar_btn)
         servicioBtn = findViewById(R.id.servicio_btn)
-
         cerrarBtn = findViewById(R.id.cerrar_btn)
-
-        // Obtener las preferencias compartidas
-        sharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
 
         // Cargar y mostrar los datos del perfil
         loadProfileData()
@@ -57,18 +46,15 @@ class Perfil : AppCompatActivity() {
         }
 
         servicioBtn.setOnClickListener {
-            // Agrega la lógica para modificar la cuenta aquí
+            // Agrega la lógica para registrar un servicio aquí
             val intent = Intent(this, registrar_servicio::class.java)
             startActivity(intent)
         }
 
         // Configurar el listener para el botón de cerrar sesión
         cerrarBtn.setOnClickListener {
-            // Borrar todas las preferencias compartidas
-            with(sharedPreferences.edit()) {
-                clear()
-                apply()
-            }
+            // Borrar todos los datos del usuario
+            UserManager.getInstance(this).clearUser()
 
             // Abrir la actividad de inicio de sesión
             val intent = Intent(this, inicio_sesion::class.java)
@@ -77,27 +63,26 @@ class Perfil : AppCompatActivity() {
             finish()
         }
 
-        // Mostrar los datos de las preferencias en la consola
-        showPreferencesDataInConsole()
+        // Mostrar los datos del usuario en la consola
+        showUserDataInConsole()
     }
 
     private fun loadProfileData() {
-        val usernameValue = sharedPreferences.getString("username", "Nombre de Usuario")
-        val emailValue = sharedPreferences.getString("correo", "usuario@correo.com")
-        val firstNameValue = sharedPreferences.getString("nombre", "Nombre")
-        val lastNameValue = sharedPreferences.getString("apellidos", "Apellidos")
-        val userImageBase64 = sharedPreferences.getString("imagenBase64", "")
+        val userManager = UserManager.getInstance(this)
+        val user = userManager.getUser()
 
-        username.text = usernameValue
-        email.text = emailValue
-        firstName.text = firstNameValue
-        lastName.text = lastNameValue
+        user?.let {
+            username.text = it.username
+            email.text = it.correo
+            firstName.text = it.nombre
+            lastName.text = it.apellidos
 
-        // Decodificar la imagen de base64 a Bitmap y mostrarla
-        if (!userImageBase64.isNullOrEmpty()) {
-            val userBitmap = decodeBase64ToBitmap(userImageBase64)
-            if (userBitmap != null) {
-                userImage.setImageBitmap(userBitmap)
+            // Decodificar la imagen de base64 a Bitmap y mostrarla
+            if (it.imagenBase64.isNotEmpty()) {
+                val userBitmap = decodeBase64ToBitmap(it.imagenBase64)
+                if (userBitmap != null) {
+                    userImage.setImageBitmap(userBitmap)
+                }
             }
         }
     }
@@ -112,17 +97,16 @@ class Perfil : AppCompatActivity() {
         }
     }
 
-    private fun showPreferencesDataInConsole() {
-        val usernameValue = sharedPreferences.getString("username", "Nombre de Usuario")
-        val emailValue = sharedPreferences.getString("email", "usuario@correo.com")
-        val firstNameValue = sharedPreferences.getString("first_name", "Nombre")
-        val lastNameValue = sharedPreferences.getString("last_name", "Apellidos")
-        val userImageBase64 = sharedPreferences.getString("user_image", "")
+    private fun showUserDataInConsole() {
+        val userManager = UserManager.getInstance(this)
+        val user = userManager.getUser()
 
-        Log.d("Perfil", "Username: $usernameValue")
-        Log.d("Perfil", "Email: $emailValue")
-        Log.d("Perfil", "First Name: $firstNameValue")
-        Log.d("Perfil", "Last Name: $lastNameValue")
-        Log.d("Perfil", "User Image Base64: $userImageBase64")
+        user?.let {
+            Log.d("Perfil", "Username: ${it.username}")
+            Log.d("Perfil", "Email: ${it.correo}")
+            Log.d("Perfil", "First Name: ${it.nombre}")
+            Log.d("Perfil", "Last Name: ${it.apellidos}")
+            Log.d("Perfil", "User Image Base64: ${it.imagenBase64}")
+        }
     }
 }

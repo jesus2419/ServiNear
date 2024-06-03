@@ -24,7 +24,6 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 import java.io.InputStream
 
-
 class registro : AppCompatActivity() {
 
     private lateinit var nombreInput: EditText
@@ -69,7 +68,6 @@ class registro : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registro)
-
 
         // Obtener referencias a los EditText y otros elementos de la vista
         nombreInput = findViewById(R.id.nombre_input)
@@ -160,7 +158,8 @@ class registro : AppCompatActivity() {
             ""
         }
 
-        guardarDatosLocalmente(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+        val user = User(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+        UserManager.getInstance(this).saveUser(user)
         dirigirActividadSegunTipoUsuario(esPrestador)
     }
 
@@ -201,14 +200,16 @@ class registro : AppCompatActivity() {
             Method.POST, url,
             Response.Listener { response ->
                 Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                guardarDatosLocalmente(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+                val user = User(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+                UserManager.getInstance(this).saveUser(user)
                 dirigirActividadSegunTipoUsuario(esPrestador)
             },
             Response.ErrorListener { error ->
                 Toast.makeText(this, "Error al registrar: ${error.message}", Toast.LENGTH_SHORT).show()
                 Log.e("RegistroActivity", "Error al registrar: ${error.message}")
                 // Guardar datos localmente en caso de fallo de conexión
-                guardarDatosLocalmente(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+                val user = User(nombre, apellidos, correo, username, password, esPrestador, imagenBase64)
+                UserManager.getInstance(this).saveUser(user)
                 dirigirActividadSegunTipoUsuario(esPrestador)
             }) {
             override fun getParams(): Map<String, String> {
@@ -223,28 +224,12 @@ class registro : AppCompatActivity() {
         Volley.newRequestQueue(this).add(request)
     }
 
-    private fun guardarDatosLocalmente(nombre: String, apellidos: String, correo: String, username: String, password: String, esPrestador: Boolean, imagenBase64: String) {
-        val sharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        editor.putString("nombre", nombre)
-        editor.putString("apellidos", apellidos)
-        editor.putString("correo", correo)
-        editor.putString("username", username)
-        editor.putString("password", password)
-        editor.putBoolean("esPrestador", esPrestador)
-        editor.putString("imagenBase64", imagenBase64)
-
-        // Confirmar los cambios
-        editor.apply()
-    }
-
     private fun dirigirActividadSegunTipoUsuario(esPrestador: Boolean) {
         if (esPrestador) {
             val intent = Intent(this, registrar_servicio::class.java)
             startActivity(intent)
         } else {
-            val intent = Intent(this, inicio::class.java)
+            val intent = Intent(this, MainActivity2::class.java)
             startActivity(intent)
         }
         finish()
