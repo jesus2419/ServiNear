@@ -24,6 +24,8 @@ class inicio_sesion : AppCompatActivity() {
     private lateinit var passwordInput: EditText
     private lateinit var loginBtn: Button
     private lateinit var registerBtn: Button
+    private lateinit var testBtn: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inicio_sesion)
@@ -31,6 +33,8 @@ class inicio_sesion : AppCompatActivity() {
         passwordInput = findViewById(R.id.password_input)
         loginBtn = findViewById(R.id.login_btn)
         registerBtn = findViewById(R.id.register_btn)
+        testBtn = findViewById(R.id.test_btn)
+
 
         // Iniciar sesión
         loginBtn.setOnClickListener {
@@ -102,6 +106,12 @@ class inicio_sesion : AppCompatActivity() {
         // Redireccionar a la pantalla de registro
         registerBtn.setOnClickListener {
             val intent = Intent(this@inicio_sesion, registro::class.java)
+            startActivity(intent)
+        }
+
+        // Redireccionar a la pantalla de testing
+        testBtn.setOnClickListener {
+            val intent = Intent(this@inicio_sesion, MainActivity2::class.java)
             startActivity(intent)
         }
 

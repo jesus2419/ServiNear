@@ -1,11 +1,17 @@
 <resources>
     <string name="app_name">ServiNear</string>
 
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
+
+
     <string-array name="tipos_usuario">
         <item>Selecciona el tipo de usuario</item>
         <item>Cliente</item>
         <item>Prestador de servicios</item>
 
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -17,6 +17,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".MainActivity2"
+            android:exported="false"
+            android:theme="@style/Theme.inicio">
+
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".modificar"
             android:exported="false" />
         <activity
@@ -39,7 +48,12 @@
             android:exported="false" />
         <activity
             android:name=".inicio"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.inicio">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".registro"
             android:exported="false" />
