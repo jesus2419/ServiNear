@@ -51,7 +51,7 @@ class inicio : AppCompatActivity() {
     }
 
     private fun obtenerServiciosDesdeServidor() {
-        val url = "http://192.168.31.198/servinear/obtener_servicios.php"
+        val url = "http://74.235.95.67/api/obtener_servicios.php"
         val queue: RequestQueue = Volley.newRequestQueue(this)
         val jsonArrayRequest = JsonArrayRequest(
             Request.Method.GET, url, null,

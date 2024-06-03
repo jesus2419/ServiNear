@@ -23,6 +23,8 @@ class Perfil : AppCompatActivity() {
     private lateinit var firstName: TextView
     private lateinit var lastName: TextView
     private lateinit var modificarBtn: Button
+    private lateinit var servicioBtn: Button
+
     private lateinit var cerrarBtn: Button
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -37,6 +39,8 @@ class Perfil : AppCompatActivity() {
         firstName = findViewById(R.id.first_name)
         lastName = findViewById(R.id.last_name)
         modificarBtn = findViewById(R.id.modificar_btn)
+        servicioBtn = findViewById(R.id.servicio_btn)
+
         cerrarBtn = findViewById(R.id.cerrar_btn)
 
         // Obtener las preferencias compartidas
@@ -49,6 +53,12 @@ class Perfil : AppCompatActivity() {
         modificarBtn.setOnClickListener {
             // Agrega la lógica para modificar la cuenta aquí
             val intent = Intent(this, modificar::class.java)
+            startActivity(intent)
+        }
+
+        servicioBtn.setOnClickListener {
+            // Agrega la lógica para modificar la cuenta aquí
+            val intent = Intent(this, registrar_servicio::class.java)
             startActivity(intent)
         }
 

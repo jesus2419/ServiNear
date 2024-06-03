@@ -66,7 +66,7 @@ class registrar_servicio : AppCompatActivity() {
     }
 
     private fun obtenerIdUsuario(username: String) {
-        val url = "http://192.168.31.198/servinear/verificar_usuario.php"
+        val url = "http://74.235.95.67/api/verificar_usuario.php"
         val request = object : StringRequest(
             Request.Method.POST, url,
             Response.Listener { response ->
@@ -118,7 +118,7 @@ class registrar_servicio : AppCompatActivity() {
         val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
 
         // Realizar la solicitud HTTP para insertar el servicio
-        val url = "http://192.168.31.198/servinear/insertar_servicio.php"
+        val url = "http://74.235.95.67/api/insertar_servicio.php"
         val request = object : StringRequest(
             Request.Method.POST, url,
             Response.Listener { response ->
