@@ -2,6 +2,7 @@ package com.example.servinear
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -152,6 +153,9 @@ class registrar_servicio : AppCompatActivity() {
             Response.Listener { response ->
                 Toast.makeText(this, response, Toast.LENGTH_SHORT).show()
                 limpiarCampos()
+                val intent = Intent(this, MainActivity2::class.java)
+                startActivity(intent)
+
             },
             Response.ErrorListener { error ->
                 Toast.makeText(this, "Error al registrar el servicio: ${error.message}", Toast.LENGTH_SHORT).show()
