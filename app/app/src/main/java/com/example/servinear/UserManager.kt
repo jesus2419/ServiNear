@@ -44,6 +44,17 @@ class UserManager private constructor(context: Context) {
         }
     }
 
+    fun uploadUser(user: User) {
+        with(sharedPreferences.edit()) {
+            putString("nombre", user.nombre)
+            putString("apellidos", user.apellidos)
+            putString("correo", user.correo)
+            putString("password", user.password)
+            putString("imagenBase64", user.imagenBase64)
+            apply()
+        }
+    }
+
 
 
     fun getUser(): User? {
