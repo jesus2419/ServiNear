@@ -213,23 +213,32 @@ class modificar : AppCompatActivity() {
 
     private fun modificarUsuario(nombre: String, apellidos: String, correo: String, password: String, imagenBase64: String) {
         val params = JSONObject()
+        params.put("username", userManager.getUser()?.username.toString())
+
         params.put("nombre", nombre)
         params.put("apellidos", apellidos)
         params.put("correo", correo)
         params.put("password", password)
         params.put("imagenBase64", imagenBase64)
 
+        Log.d("Perfil", "Username: ${userManager.getUser()?.username}")
 
 
 
         //val url = "http://192.168.31.198/servinear/p2.php"
-        val url = "http://74.235.95.67/api/p2.php"
+        val url = "http://74.235.95.67/api/updateuser.php"
         val request = object : StringRequest(
             Method.POST, url,
             Response.Listener { response ->
                 Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                val user = User(nombre, apellidos, correo, password, imagenBase64)
-                UserManager.getInstance(this).uploadUser(user)
+                val user = userManager.getUser()?.let {
+                    User(nombre, apellidos, correo,
+                        userManager.getUser()?.username.toString(), password, it.esPrestador, imagenBase64)
+
+                }
+                if (user != null) {
+                    UserManager.getInstance(this).uploadUser(user)
+                }
             },
             Response.ErrorListener { error ->
                 Toast.makeText(this, "Error al registrar: ${error.message}", Toast.LENGTH_SHORT).show()
@@ -246,6 +255,9 @@ class modificar : AppCompatActivity() {
         }
 
         Volley.newRequestQueue(this).add(request)
+
+
+
     }
 
     private fun handleVolleyError(error: VolleyError) {
