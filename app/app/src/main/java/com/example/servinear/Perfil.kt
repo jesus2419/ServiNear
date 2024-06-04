@@ -18,7 +18,6 @@ class Perfil : AppCompatActivity() {
     private lateinit var firstName: TextView
     private lateinit var lastName: TextView
     private lateinit var modificarBtn: Button
-    private lateinit var servicioBtn: Button
     private lateinit var cerrarBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +31,6 @@ class Perfil : AppCompatActivity() {
         firstName = findViewById(R.id.first_name)
         lastName = findViewById(R.id.last_name)
         modificarBtn = findViewById(R.id.modificar_btn)
-        servicioBtn = findViewById(R.id.servicio_btn)
         cerrarBtn = findViewById(R.id.cerrar_btn)
 
         // Cargar y mostrar los datos del perfil
@@ -45,11 +43,6 @@ class Perfil : AppCompatActivity() {
             startActivity(intent)
         }
 
-        servicioBtn.setOnClickListener {
-            // Agrega la lógica para registrar un servicio aquí
-            val intent = Intent(this, registrar_servicio::class.java)
-            startActivity(intent)
-        }
 
         // Configurar el listener para el botón de cerrar sesión
         cerrarBtn.setOnClickListener {

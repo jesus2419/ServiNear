@@ -103,6 +103,20 @@
 
 
 
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ELIMINAR CUENTA"
+            android:backgroundTint="@color/black"
+            android:textColor="#3B84F1"
+            android:padding="18dp"
+            android:layout_marginTop="32dp"
+            android:textSize="20sp"
+            android:id="@+id/eliminar_btn"/>
+
+
+
     </LinearLayout>
 
 

@@ -1,6 +1,7 @@
 package com.example.servinear
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -36,6 +37,8 @@ class modificar : AppCompatActivity() {
     private lateinit var usernameText: TextView
     private lateinit var passwordInput: EditText
     private lateinit var modificarBtn: Button
+    private lateinit var eliminarBtn: Button
+
     private lateinit var imageView: ImageView
     private lateinit var selectImageBtn: Button
 
@@ -79,6 +82,8 @@ class modificar : AppCompatActivity() {
         usernameText = findViewById(R.id.username)
         passwordInput = findViewById(R.id.password_input)
         modificarBtn = findViewById(R.id.modificar_btn)
+        eliminarBtn = findViewById(R.id.eliminar_btn)
+
         imageView = findViewById(R.id.image_view)
         selectImageBtn = findViewById(R.id.select_image_btn)
 
@@ -151,6 +156,15 @@ class modificar : AppCompatActivity() {
 
         queue.add(request)
 
+
+        eliminarBtn.setOnClickListener {
+
+            eliminarUsuario()
+            //Toast.makeText(this, "*no hace nada*", Toast.LENGTH_SHORT).show()
+
+            // Aquí puedes implementar la lógica para modificar los datos del usuario
+            // por ejemplo, realizar una nueva solicitud al servidor para guardar los cambios
+        }
         // Configurar el botón de modificar
         modificarBtn.setOnClickListener {
 
@@ -239,6 +253,52 @@ class modificar : AppCompatActivity() {
                 if (user != null) {
                     UserManager.getInstance(this).uploadUser(user)
                 }
+                val intent = Intent(this, MainActivity2::class.java)
+                startActivity(intent)
+            },
+            Response.ErrorListener { error ->
+                Toast.makeText(this, "Error al registrar: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.e("RegistroActivity", "Error al registrar: ${error.message}")
+
+            }) {
+            override fun getParams(): Map<String, String> {
+                val paramsMap = HashMap<String, String>()
+                for (key in params.keys()) {
+                    paramsMap[key] = params.getString(key)
+                }
+                return paramsMap
+            }
+        }
+
+        Volley.newRequestQueue(this).add(request)
+
+
+
+    }
+
+    private fun eliminarUsuario() {
+        val params = JSONObject()
+        params.put("username", userManager.getUser()?.username.toString())
+
+
+
+        Log.d("Perfil", "Username: ${userManager.getUser()?.username}")
+
+
+
+        //val url = "http://192.168.31.198/servinear/p2.php"
+        val url = "http://74.235.95.67/api/bajauser.php"
+        val request = object : StringRequest(
+            Method.POST, url,
+            Response.Listener { response ->
+                Toast.makeText(this, "Eliminación exitosa", Toast.LENGTH_SHORT).show()
+
+                userManager.clearUser()
+                // Redireccionar a la actividad de inicio de sesión
+                val intent = Intent(this, inicio_sesion::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
             },
             Response.ErrorListener { error ->
                 Toast.makeText(this, "Error al registrar: ${error.message}", Toast.LENGTH_SHORT).show()
