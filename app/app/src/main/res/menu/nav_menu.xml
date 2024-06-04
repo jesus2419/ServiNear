@@ -14,7 +14,7 @@
         <item
             android:id="@+id/nav_perfil"
             android:icon="@drawable/baseline_person_24"
-            android:title="Modificar perfil"/>
+            android:title="Perfil"/>
 
         <item
             android:id="@+id/nav_info"

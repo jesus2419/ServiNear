@@ -31,6 +31,11 @@ class modificar : AppCompatActivity() {
     private lateinit var modificarBtn: Button
     private lateinit var imageView: ImageView
     private lateinit var selectImageBtn: Button
+
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var userManager: UserManager
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_modificar)
@@ -44,12 +49,19 @@ class modificar : AppCompatActivity() {
         imageView = findViewById(R.id.image_view)
         selectImageBtn = findViewById(R.id.select_image_btn)
 
+        userManager = UserManager.getInstance(this)
+
+
+
+
+
         // Obtener datos guardados en SharedPreferences (por ejemplo, id de usuario)
         val sharedPreferences: SharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
         val idUsuario = sharedPreferences.getInt("idUsuario", -1)
+        val username2 = userManager.getUser()?.username
 
         // Realizar la petición al servidor para obtener los datos del usuario
-        val url = "http://192.168.31.198/servinear/obtener_datos_usuario.php"
+        val url = "http://74.235.95.67/api/obtener_datos_usuario.php"
         val queue: RequestQueue = Volley.newRequestQueue(this@modificar)
         val request = object : StringRequest(
             Request.Method.POST, url,
@@ -99,7 +111,7 @@ class modificar : AppCompatActivity() {
         ) {
             override fun getParams(): Map<String, String> {
                 val params = HashMap<String, String>()
-                params["idUsuario"] = idUsuario.toString()
+                params["usuario"] = username2.toString()
                 return params
             }
         }

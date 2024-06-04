@@ -35,6 +35,7 @@ class HomeFragment : Fragment() {
     private lateinit var perfilBtn: Button
     private lateinit var sharedPreferences: SharedPreferences
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,6 +52,9 @@ class HomeFragment : Fragment() {
             val intent = Intent(activity, Perfil::class.java)
             startActivity(intent)
         }
+
+        // Configurar el listener para el SearchView
+
 
         // Intentar cargar los servicios desde la base de datos remota
         obtenerServiciosDesdeServidor()

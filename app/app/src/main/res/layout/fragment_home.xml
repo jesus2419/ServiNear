@@ -19,6 +19,8 @@
         android:queryHint="Buscar..."
         android:iconifiedByDefault="false" />
 
+
+
     <!-- Contenedor donde se agregarán dinámicamente los usuarios -->
     <LinearLayout
         android:id="@+id/usuarios_container"
