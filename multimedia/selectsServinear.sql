@@ -5,6 +5,14 @@ SELECT ID, id_usuario, Nombre, descripcion, contacto, precio_hora, Foto, Fecha_d
 
 select * from usuarios;
 
+UPDATE usuarios
+SET Nombre  = ?, Apellidos  = ?, Correo  = ?, pass  = ?, Foto  = ?
+WHERE usuario = ?;
+
+UPDATE usuarios
+SET Estado = 1
+WHERE ID = 7;
+
 
 SELECT 
     servicio.ID,
