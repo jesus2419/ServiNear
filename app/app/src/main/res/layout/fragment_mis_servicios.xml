@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background"
+    android:gravity="top"
+    android:padding="16dp"
+    tools:context=".MisServiciosFragment"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:queryHint="Buscar..."
+        android:iconifiedByDefault="false" />
+
+    <!-- Contenedor donde se agregarán dinámicamente los usuarios -->
+    <LinearLayout
+        android:id="@+id/usuarios_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"/>
+    <!-- Contenedor 1 -->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver perfil222"
+        android:backgroundTint="@color/black"
+        android:textColor="#3B84F1"
+        android:padding="18dp"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        android:id="@+id/perfil_btn"/>
+
+</LinearLayout>
