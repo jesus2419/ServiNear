@@ -4,15 +4,83 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/login_background"
+
+    android:padding="16dp"
     tools:context=".InfoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <ImageView
+        android:id="@+id/imageViewIcon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/logooo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"/>
     <TextView
+        android:id="@+id/textViewAppName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Info fragment"
-        android:textSize="30sp"
-        android:layout_centerInParent="true"
-        android:textColor="@color/lavender"/>
+        android:text="Servinear"
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:layout_below="@id/imageViewIcon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/textViewAppVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version 2.0"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:layout_below="@id/textViewAppName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/textViewAppDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Esta aplicación busca conectar usuarios con prestadores de servicio de manera eficiente y conveniente. Ofrece a los usuarios la capacidad de encontrar rápidamente profesionales y empresas que puedan satisfacer sus necesidades específicas, ya sea para servicios de reparación, consultoría, soporte técnico, atención médica domiciliaria, entre otros."
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:layout_below="@id/textViewAppVersion"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"/>
+
+    <!-- Segunda imagen -->
+    <ImageView
+        android:id="@+id/imageViewAboutUs"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_below="@id/textViewAppDescription"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/gracias" />
+
+    <TextView
+        android:id="@+id/textViewAboutUs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sobre nosotros"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:layout_below="@id/imageViewAboutUs"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"/>
+
+    <TextView
+        android:id="@+id/textViewAboutUsDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gracias por utilizar la app, Somos una empresa dedicada al desarrollo de aplicaciones increíbles. Contacto: jesus.osoriogz@uanl.edu.mx"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:layout_below="@id/textViewAboutUs"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+
 
 </RelativeLayout>

@@ -37,6 +37,8 @@ class modificarServicio : AppCompatActivity() {
     private lateinit var imageView: ImageView
     private lateinit var selectImageBtn: Button
     private lateinit var registerBtn: Button
+    private lateinit var eliminarbtn: Button
+
 
     private var selectedImageUri: Uri? = null
     private var idServicio: String? = null
@@ -72,6 +74,8 @@ class modificarServicio : AppCompatActivity() {
         imageView = findViewById(R.id.image_view)
         selectImageBtn = findViewById(R.id.select_image_btn)
         registerBtn = findViewById(R.id.register_btn)
+        eliminarbtn = findViewById(R.id.eliminar_btn)
+
 
         // Cargar los datos del servicio seleccionado desde el singleton
         val servicioSeleccionado = ServicioSeleccionado.getInstance()
@@ -94,6 +98,10 @@ class modificarServicio : AppCompatActivity() {
             registrarServicio()
         }
 
+        eliminarbtn.setOnClickListener {
+            eliminarServicio()
+        }
+
         // Solicitar permiso de lectura de almacenamiento
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -104,6 +112,36 @@ class modificarServicio : AppCompatActivity() {
                 this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1
             )
         }
+    }
+
+
+    private fun eliminarServicio() {
+
+
+        // Realizar la solicitud HTTP para actualizar el servicio
+        val url = "http://74.235.95.67/api/bajaservicio.php"
+        val request = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener { response ->
+                Toast.makeText(this, response, Toast.LENGTH_SHORT).show()
+                Log.d("errores jaja", "error: ${response}")
+
+                limpiarCampos()
+                val intent = Intent(this, MainActivity2::class.java)
+                startActivity(intent)
+            },
+            Response.ErrorListener { error ->
+                Toast.makeText(this, "Error al actualizar el servicio: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.d("errores jaja", "error: ${error.message}")
+            }) {
+            override fun getParams(): Map<String, String> {
+                return mapOf(
+                    "id_servicio" to idServicio.toString()
+                )
+            }
+        }
+
+        Volley.newRequestQueue(this).add(request)
     }
 
     private fun registrarServicio() {

@@ -1,20 +1,43 @@
 package com.example.servinear
 
+
 import ServicioSeleccionado
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.TimeoutError
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import org.json.JSONException
+import org.json.JSONObject
 
 class servicio : AppCompatActivity() {
     private lateinit var userManager: UserManager
+    private lateinit var userImage: ImageView
+    private lateinit var usernametext: TextView
+    private lateinit var email: TextView
+    private lateinit var firstName: TextView
+    private lateinit var lastName: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_servicio)
 
         userManager = UserManager.getInstance(this)
+
+        userImage = findViewById(R.id.user_image)
+        usernametext = findViewById(R.id.username)
+        email = findViewById(R.id.email)
+        firstName = findViewById(R.id.first_name)
+        lastName = findViewById(R.id.last_name)
 
         // Obtener la instancia del servicio seleccionado
         val servicioSeleccionado = ServicioSeleccionado.getInstance()
@@ -42,7 +65,88 @@ class servicio : AppCompatActivity() {
         precioHoraTextView.text = precioHora
         imagenView.setImageBitmap(imagenBitmap)
 
+        loadProfileData()
+
         // Configurar la visibilidad del botón de modificar según el tipo de usuario
 
     }
+
+
+    private fun loadProfileData() {
+
+        // Realizar la petición al servidor para obtener los datos del usuario
+        val url = "http://74.235.95.67/api/id_obtener_datos_usuario.php"
+        val queue: RequestQueue = Volley.newRequestQueue(this@servicio)
+        val request = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener { response ->
+                try {
+                    val jsonObject = JSONObject(response)
+                    val success = jsonObject.getBoolean("success")
+
+                    if (success) {
+                        // Obtener datos del usuario
+                        val nombre = jsonObject.getString("nombre")
+                        val apellidos = jsonObject.getString("apellidos")
+                        val correo = jsonObject.getString("correo")
+                        val username = jsonObject.getString("usuario")
+                        val pass = jsonObject.getString("pass")
+
+                        val imagenBase64 = jsonObject.getString("imagen")
+
+
+
+                        // Mostrar datos en los elementos de la interfaz
+                        firstName.setText(nombre)
+                        lastName.setText(apellidos)
+                        email.setText(correo)
+                        usernametext.text = username
+
+
+                        // Cargar la imagen en el ImageView
+                        if (imagenBase64.isNotEmpty()) {
+                            val imageBytes = Base64.decode(imagenBase64, Base64.DEFAULT)
+                            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                            userImage.setImageBitmap(bitmap)
+                        } else {
+                            // Si no hay imagen, puedes mostrar una imagen por defecto
+                            userImage.setImageResource(R.drawable.icon_account_circle)
+                        }
+
+                    } else {
+                        Toast.makeText(this@servicio, "Error al obtener datos del usuario", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    Toast.makeText(this@servicio, "Error al procesar la respuesta del servidor", Toast.LENGTH_SHORT).show()
+                }
+            },
+            Response.ErrorListener { error ->
+                handleVolleyError(error)
+            }
+        ) {
+            override fun getParams(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["idUsuario"] =  ServicioSeleccionado.getInstance().idServicio.toString()
+                return params
+            }
+        }
+
+        queue.add(request)
+
+    }
+
+    private fun handleVolleyError(error: VolleyError) {
+        error.printStackTrace()
+
+        val errorMessage = when (error) {
+            is TimeoutError -> "Tiempo de espera agotado. Inténtalo de nuevo."
+            is VolleyError -> "Error de Volley: ${error.message}"
+            else -> "Error al conectar con el servidor."
+        }
+
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+    }
+
+
 }

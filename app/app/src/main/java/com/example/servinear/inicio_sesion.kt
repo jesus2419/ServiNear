@@ -22,7 +22,6 @@ class inicio_sesion : AppCompatActivity() {
     private lateinit var passwordInput: EditText
     private lateinit var loginBtn: Button
     private lateinit var registerBtn: Button
-    private lateinit var testBtn: Button
 
     private lateinit var userManager: UserManager
 
@@ -34,7 +33,6 @@ class inicio_sesion : AppCompatActivity() {
         passwordInput = findViewById(R.id.password_input)
         loginBtn = findViewById(R.id.login_btn)
         registerBtn = findViewById(R.id.register_btn)
-        testBtn = findViewById(R.id.test_btn)
 
         userManager = UserManager.getInstance(this)
 
@@ -117,10 +115,7 @@ class inicio_sesion : AppCompatActivity() {
         }
 
         // Redireccionar a la pantalla de testing
-        testBtn.setOnClickListener {
-            val intent = Intent(this@inicio_sesion, MainActivity2::class.java)
-            startActivity(intent)
-        }
+
     }
 
     private fun handleVolleyError(error: VolleyError) {

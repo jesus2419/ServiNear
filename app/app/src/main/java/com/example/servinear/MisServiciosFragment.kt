@@ -12,7 +12,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -31,7 +30,6 @@ import java.io.ByteArrayOutputStream
 class MisServiciosFragment : Fragment() {
 
     private lateinit var serviciosContainer: LinearLayout
-    private lateinit var perfilBtn: Button
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userManager: UserManager
 
@@ -45,7 +43,6 @@ class MisServiciosFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_mis_servicios, container, false)
         serviciosContainer = view.findViewById(R.id.usuarios_container)
-        perfilBtn = view.findViewById(R.id.perfil_btn)
 
         // Inicialización de SharedPreferences
         //sharedPreferences = requireActivity().getSharedPreferences("DatosServicios", Context.MODE_PRIVATE)
@@ -55,10 +52,7 @@ class MisServiciosFragment : Fragment() {
 
         servicioSeleccionado = ServicioSeleccionado.getInstance()
 
-        perfilBtn.setOnClickListener {
-            val intent = Intent(activity, Perfil::class.java)
-            startActivity(intent)
-        }
+
 
         // Intentar cargar los servicios desde la base de datos remota
         obtenerServiciosDesdeServidor()

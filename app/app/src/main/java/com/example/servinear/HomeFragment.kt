@@ -13,7 +13,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -33,7 +32,6 @@ import java.io.ByteArrayOutputStream
 class HomeFragment : Fragment() {
 
     private lateinit var serviciosContainer: LinearLayout
-    private lateinit var perfilBtn: Button
     private lateinit var sharedPreferences: SharedPreferences
 
 
@@ -44,15 +42,11 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         serviciosContainer = view.findViewById(R.id.usuarios_container)
-        perfilBtn = view.findViewById(R.id.perfil_btn)
 
         // Inicialización de SharedPreferences
         sharedPreferences = requireActivity().getSharedPreferences("DatosServicios", Context.MODE_PRIVATE)
 
-        perfilBtn.setOnClickListener {
-            val intent = Intent(activity, Perfil::class.java)
-            startActivity(intent)
-        }
+
 
         ServicioSeleccionado.getInstance().clear()
 
@@ -77,6 +71,8 @@ class HomeFragment : Fragment() {
                         Log.d("Servicios", "Número de servicios recibidos: ${response.length()}")
                         for (i in 0 until response.length()) {
                             val servicio = response.getJSONObject(i)
+                            val id_usuario = servicio.getString("id_usuario")
+
                             val nombre = servicio.getString("Nombre")
                             val descripcion = servicio.getString("descripcion")
                             val contacto = servicio.getString("contacto")
@@ -88,7 +84,7 @@ class HomeFragment : Fragment() {
                             val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                             if (imagenBitmap != null) {
                                 // Mostrar el servicio en la interfaz
-                                mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
+                                mostrarServicio(id_usuario, nombre, descripcion, contacto, precio_hora, imagenBitmap)
                             } else {
                                 Log.e("DecodeError", "Error al decodificar la imagen base64")
                             }
@@ -136,7 +132,7 @@ class HomeFragment : Fragment() {
                     val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                     if (imagenBitmap != null) {
                         // Mostrar el servicio en la interfaz
-                        mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
+                        //mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
                     } else {
                         Log.e("DecodeError", "Error al decodificar la imagen base64")
                     }
@@ -150,7 +146,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun mostrarServicio(nombre: String, descripcion: String, contacto: String, precio_hora: String, imagen: Bitmap) {
+    private fun mostrarServicio(id_user: String, nombre: String, descripcion: String, contacto: String, precio_hora: String, imagen: Bitmap) {
         // Crear un nuevo contenedor para el servicio
         val servicioLayout = LinearLayout(requireActivity())
         servicioLayout.orientation = LinearLayout.HORIZONTAL
@@ -175,7 +171,7 @@ class HomeFragment : Fragment() {
             intent.putExtra("precio_hora", precio_hora)*/
 
             val servicioSeleccionado = ServicioSeleccionado.getInstance()
-            servicioSeleccionado.setServicio("", nombre, descripcion, contacto, precio_hora, byteArray)
+            servicioSeleccionado.setServicio(id_user, nombre, descripcion, contacto, precio_hora, byteArray)
 
             intent.putExtra("imagen", byteArray)  // Pasar el ByteArray en lugar del Bitmap
             startActivity(intent)

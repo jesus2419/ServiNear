@@ -94,6 +94,16 @@
             android:backgroundTint="@color/white"
             android:textColor="#3B84F1"
             android:padding="18dp"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/eliminar_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ELIMINAR servicio"
+            android:backgroundTint="@color/black"
+            android:textColor="#3B84F1"
+            android:padding="18dp"
             android:layout_marginTop="32dp"
             android:textSize="20sp"/>
 

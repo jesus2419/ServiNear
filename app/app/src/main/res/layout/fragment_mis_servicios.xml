@@ -49,15 +49,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"/>
     <!-- Contenedor 1 -->
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ver perfil222"
-        android:backgroundTint="@color/black"
-        android:textColor="#3B84F1"
-        android:padding="18dp"
-        android:layout_marginTop="32dp"
-        android:textSize="20sp"
-        android:id="@+id/perfil_btn"/>
+
 
 </LinearLayout>
