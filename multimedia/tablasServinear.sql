@@ -45,5 +45,5 @@ CREATE TABLE servicio (
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(ID) -- Agregar la clave externa que referencia a la tabla Rol
 );
 
-ALTER TABLE servicio MODIFY Foto BLOB;
+ALTER TABLE servicio MODIFY descripcion VARCHAR(255);
 

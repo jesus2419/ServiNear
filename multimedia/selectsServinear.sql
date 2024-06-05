@@ -13,6 +13,14 @@ UPDATE usuarios
 SET Estado = 1
 WHERE ID = 7;
 
+UPDATE usuarios
+SET id_rol = 2
+WHERE ID = 11;
+
+UPDATE usuarios
+SET usuario = 'edgarin'
+WHERE ID = 13;
+
 select * from servicio;
 -- ID, id_usuario, Nombre, descripcion, contacto, precio_hora, Foto, Fecha_de_creacion, Estado
 
