@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login_background"
-    android:gravity="top"
     android:padding="16dp"
-    tools:context=".HomeFragment"
-    android:orientation="vertical">
+    tools:context=".HomeFragment">
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:queryHint="Buscar..."
-        android:iconifiedByDefault="false" />
-
-
-
-    <!-- Contenedor donde se agregarán dinámicamente los usuarios -->
     <LinearLayout
-        android:id="@+id/usuarios_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"/>
-    <!-- Contenedor 1 -->
+        android:orientation="vertical">
 
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:queryHint="Buscar..."
+            android:iconifiedByDefault="false" />
 
-</LinearLayout>
+        <!-- Contenedor donde se agregarán dinámicamente los usuarios -->
+        <LinearLayout
+            android:id="@+id/usuarios_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+
+        <!-- Otros elementos que desees agregar -->
+
+    </LinearLayout>
+
+</ScrollView>
