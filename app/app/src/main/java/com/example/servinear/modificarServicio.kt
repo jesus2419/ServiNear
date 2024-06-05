@@ -1,5 +1,6 @@
 package com.example.servinear
 
+import ServicioSeleccionado
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -8,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -26,7 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class registrar_servicio : AppCompatActivity() {
+class modificarServicio : AppCompatActivity() {
 
     private lateinit var nombreInput: EditText
     private lateinit var descripcionInput: EditText
@@ -35,33 +37,32 @@ class registrar_servicio : AppCompatActivity() {
     private lateinit var imageView: ImageView
     private lateinit var selectImageBtn: Button
     private lateinit var registerBtn: Button
-    private lateinit var userManager: UserManager
-
 
     private var selectedImageUri: Uri? = null
-    private var idUsuario: Int = -1
+    private var idServicio: String? = null
 
-    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            selectedImageUri = it
-            imageView.setImageURI(it)
+    private val pickImage =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                selectedImageUri = it
+                imageView.setImageURI(it)
 
-            // Verificar tamaño de la imagen seleccionada
-            val inputStream: InputStream? = contentResolver.openInputStream(it)
-            val bytes: ByteArray? = inputStream?.readBytes()
-            bytes?.let {
-                if (it.size > 60 * 1024) { // Verificar si el tamaño supera los 60 KB
-                    selectedImageUri = null
-                    imageView.setImageResource(android.R.color.transparent)
-                    Toast.makeText(this, "La imagen no puede pesar más de 60 KB", Toast.LENGTH_SHORT).show()
+                // Verificar tamaño de la imagen seleccionada
+                val inputStream: InputStream? = contentResolver.openInputStream(it)
+                val bytes: ByteArray? = inputStream?.readBytes()
+                bytes?.let {
+                    if (it.size > 60 * 1024) { // Verificar si el tamaño supera los 60 KB
+                        selectedImageUri = null
+                        imageView.setImageResource(android.R.color.transparent)
+                        Toast.makeText(this, "La imagen no puede pesar más de 60 KB", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_registrar_servicio)
+        setContentView(R.layout.activity_modificar_servicio)
 
         // Inicializar vistas
         nombreInput = findViewById(R.id.nombre_input)
@@ -71,18 +72,17 @@ class registrar_servicio : AppCompatActivity() {
         imageView = findViewById(R.id.image_view)
         selectImageBtn = findViewById(R.id.select_image_btn)
         registerBtn = findViewById(R.id.register_btn)
-        userManager = UserManager.getInstance(this)
 
-
-        // Obtener ID de usuario desde SharedPreferences
-        /*val sharedPreferences = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE)
-        val username = sharedPreferences.getString("username", "")*/
-
-        val username = userManager.getUser()?.username ?: return  // Obtener el nombre de usuario de UserManager
-
-        if (!username.isNullOrEmpty()) {
-            obtenerIdUsuario(username)
-        }
+        // Cargar los datos del servicio seleccionado desde el singleton
+        val servicioSeleccionado = ServicioSeleccionado.getInstance()
+        idServicio = servicioSeleccionado.idServicio
+        nombreInput.setText(servicioSeleccionado.nombre)
+        descripcionInput.setText(servicioSeleccionado.descripcion)
+        informacionInput.setText(servicioSeleccionado.contacto)
+        precioInput.setText(servicioSeleccionado.precioHora)
+        val imagenBitmap =
+            BitmapFactory.decodeByteArray(servicioSeleccionado.imagen, 0, servicioSeleccionado.imagen!!.size)
+        imageView.setImageBitmap(imagenBitmap)
 
         // Botón para seleccionar imagen
         selectImageBtn.setOnClickListener {
@@ -95,32 +95,15 @@ class registrar_servicio : AppCompatActivity() {
         }
 
         // Solicitar permiso de lectura de almacenamiento
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1
+            )
         }
-    }
-
-    private fun obtenerIdUsuario(username: String) {
-        val url = "http://74.235.95.67/api/verificar_usuario.php"
-        val request = object : StringRequest(
-            Request.Method.POST, url,
-            Response.Listener { response ->
-                if (response == "false") {
-                    Toast.makeText(this, "El nombre de usuario no existe", Toast.LENGTH_SHORT).show()
-                } else {
-                    idUsuario = response.toInt()
-                }
-            },
-            Response.ErrorListener { error ->
-                Toast.makeText(this, "Error al verificar el usuario: ${error.message}", Toast.LENGTH_SHORT).show()
-            }) {
-            override fun getParams(): Map<String, String> {
-                return mapOf("username" to username)
-            }
-        }
-
-        Volley.newRequestQueue(this).add(request)
     }
 
     private fun registrarServicio() {
@@ -139,39 +122,34 @@ class registrar_servicio : AppCompatActivity() {
             return
         }
 
-        if (idUsuario == -1) {
-            Toast.makeText(this, "Error obteniendo ID de usuario", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Preparar la imagen para ser enviada al servidor
+        // Convertir imagen a Base64 después de comprimir
         val imagenBase64 = convertImageToBase64(selectedImageUri!!)
         val currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
 
-        // Realizar la solicitud HTTP para insertar el servicio
-        val url = "http://74.235.95.67/api/insertar_servicio.php"
+        // Realizar la solicitud HTTP para actualizar el servicio
+        val url = "http://74.235.95.67/api/modificar_servicio.php"
         val request = object : StringRequest(
             Request.Method.POST, url,
             Response.Listener { response ->
                 Toast.makeText(this, response, Toast.LENGTH_SHORT).show()
-                limpiarCampos()
-                val intent = Intent(this, MainActivity2::class.java)
-                startActivity(intent)
+                Log.d("errores jaja", "error: ${response}")
 
+                limpiarCampos()
+               val intent = Intent(this, MainActivity2::class.java)
+                startActivity(intent)
             },
             Response.ErrorListener { error ->
-                Toast.makeText(this, "Error al registrar el servicio: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error al actualizar el servicio: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.d("errores jaja", "error: ${error.message}")
             }) {
             override fun getParams(): Map<String, String> {
                 return mapOf(
-                    "id_usuario" to idUsuario.toString(),
+                    "id_servicio" to idServicio.toString(),
                     "nombre" to nombre,
                     "descripcion" to descripcion,
                     "informacion" to informacion,
                     "precio" to precio,
-                    "foto_base64" to imagenBase64,
-                    "fecha_creacion" to currentDate,
-                    "estado" to "1" // Suponemos que el estado es 1 por defecto (activo)
+                    "foto_base64" to imagenBase64
                 )
             }
         }
@@ -186,6 +164,24 @@ class registrar_servicio : AppCompatActivity() {
         precioInput.text.clear()
         imageView.setImageResource(R.drawable.icon_account_circle)
         selectedImageUri = null
+    }
+
+    private fun compressAndSetImage(uri: Uri) {
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+
+        bitmap?.let {
+            val resizedBitmap = resizeBitmap(it, 800, 800)
+            val compressedBitmap = compressBitmap(resizedBitmap, 60 * 1024)
+
+            compressedBitmap?.let { compressed ->
+                imageView.setImageBitmap(compressed)
+            } ?: run {
+                selectedImageUri = null
+                imageView.setImageResource(android.R.color.transparent)
+                Toast.makeText(this, "La imagen no puede pesar más de 60 KB", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun resizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
@@ -218,11 +214,17 @@ class registrar_servicio : AppCompatActivity() {
         }
 
         return if (byteArrayOutputStream.size() <= maxSize) {
-            BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.size())
+            BitmapFactory.decodeByteArray(
+                byteArrayOutputStream.toByteArray(),
+                0,
+                byteArrayOutputStream.size()
+            )
         } else {
             null
         }
     }
+
+
 
     private fun convertImageToBase64(uri: Uri): String {
         val inputStream: InputStream? = contentResolver.openInputStream(uri)
@@ -232,4 +234,25 @@ class registrar_servicio : AppCompatActivity() {
         }
         return ""
     }
+    private fun convertAndCompressImageToBase64(uri: Uri): String {
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+
+        bitmap?.let {
+            val resizedBitmap = resizeBitmap(it, 400, 400)
+            val compressedBitmap = compressBitmap(resizedBitmap, 60 * 1024)
+
+            compressedBitmap?.let { compressed ->
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                compressed.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                val byteArray = byteArrayOutputStream.toByteArray()
+                return Base64.encodeToString(byteArray, Base64.DEFAULT)
+            } ?: run {
+                Toast.makeText(this, "La imagen no puede pesar más de 60 KB", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        return ""
+    }
+
 }

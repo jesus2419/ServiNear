@@ -1,5 +1,6 @@
 package com.example.servinear
 
+import ServicioSeleccionado
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -52,6 +53,9 @@ class HomeFragment : Fragment() {
             val intent = Intent(activity, Perfil::class.java)
             startActivity(intent)
         }
+
+        ServicioSeleccionado.getInstance().clear()
+
 
         // Configurar el listener para el SearchView
 
@@ -165,10 +169,14 @@ class HomeFragment : Fragment() {
 
             // Abrir la actividad de detalle del servicio
             val intent = Intent(activity, servicio::class.java)
-            intent.putExtra("nombre", nombre)
+            /*intent.putExtra("nombre", nombre)
             intent.putExtra("descripcion", descripcion)
             intent.putExtra("contacto", contacto)
-            intent.putExtra("precio_hora", precio_hora)
+            intent.putExtra("precio_hora", precio_hora)*/
+
+            val servicioSeleccionado = ServicioSeleccionado.getInstance()
+            servicioSeleccionado.setServicio("", nombre, descripcion, contacto, precio_hora, byteArray)
+
             intent.putExtra("imagen", byteArray)  // Pasar el ByteArray en lugar del Bitmap
             startActivity(intent)
         }

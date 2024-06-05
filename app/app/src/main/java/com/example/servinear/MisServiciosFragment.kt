@@ -1,6 +1,6 @@
 package com.example.servinear
 
-import android.content.Context
+import ServicioSeleccionado
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -35,6 +35,9 @@ class MisServiciosFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userManager: UserManager
 
+    private lateinit var servicioSeleccionado: ServicioSeleccionado
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,10 +48,12 @@ class MisServiciosFragment : Fragment() {
         perfilBtn = view.findViewById(R.id.perfil_btn)
 
         // Inicialización de SharedPreferences
-        sharedPreferences = requireActivity().getSharedPreferences("DatosServicios", Context.MODE_PRIVATE)
+        //sharedPreferences = requireActivity().getSharedPreferences("DatosServicios", Context.MODE_PRIVATE)
 
         // Inicialización de UserManager
         userManager = UserManager.getInstance(requireActivity())
+
+        servicioSeleccionado = ServicioSeleccionado.getInstance()
 
         perfilBtn.setOnClickListener {
             val intent = Intent(activity, Perfil::class.java)
@@ -82,8 +87,6 @@ class MisServiciosFragment : Fragment() {
                             val precio_hora = servicio.getString("precio_hora")
                             val imagenBase64 = servicio.getString("FotoServicio")
                             val nombreusuario = servicio.getString("NombreUsuario")
-
-
 
                             // Decodificar la imagen de base64 a Bitmap
                             val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
@@ -143,7 +146,7 @@ class MisServiciosFragment : Fragment() {
                     val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                     if (imagenBitmap != null) {
                         // Mostrar el servicio en la interfaz
-                       // mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
+                        // mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
                     } else {
                         Log.e("DecodeError", "Error al decodificar la imagen base64")
                     }
@@ -174,14 +177,12 @@ class MisServiciosFragment : Fragment() {
             imagen.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
             val byteArray = byteArrayOutputStream.toByteArray()
 
+            // Guardar la información del servicio en la clase Singleton
+
+            servicioSeleccionado.setServicio(idservicio, nombre, descripcion, contacto, precio_hora, byteArray)
+
             // Abrir la actividad de detalle del servicio
             val intent = Intent(activity, miServicio::class.java)
-            intent.putExtra("ID", idservicio)
-            intent.putExtra("nombre", nombre)
-            intent.putExtra("descripcion", descripcion)
-            intent.putExtra("contacto", contacto)
-            intent.putExtra("precio_hora", precio_hora)
-            intent.putExtra("imagen", byteArray)  // Pasar el ByteArray en lugar del Bitmap
             startActivity(intent)
         }
 

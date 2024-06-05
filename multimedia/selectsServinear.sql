@@ -20,6 +20,12 @@ UPDATE servicio
 SET Nombre  = ?, descripcion  = ?, contacto  = ?, precio_hora  = ?, Foto  = ?
 WHERE ID = ?;
 
+UPDATE servicio
+SET Foto  = ''
+WHERE ID = 4;
+
+delete from servicio where ID = 2
+
 
 SELECT 
     servicio.ID,

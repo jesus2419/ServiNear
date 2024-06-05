@@ -113,16 +113,95 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/modificar_btn"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="@color/black"
-        android:padding="18dp"
-        android:text="Modificar"
-        android:textColor="#3B84F1"
-        android:textSize="20sp" />
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="Prestador del servicio"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+
+
+        <!-- Imagen del usuario -->
+        <ImageView
+            android:id="@+id/user_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="32dp"
+
+            android:src="@drawable/icon_account_circle"
+            android:scaleType="centerCrop"
+            />
+
+        <!-- Nombre de usuario -->
+
+
+
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_image"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="Nombre de Usuario"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
+
+        <!-- Correo electrónico -->
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/username"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:text="usuario@correo.com"
+            android:textSize="16sp"
+            android:textColor="@color/white"/>
+
+        <!-- Nombre -->
+        <TextView
+            android:id="@+id/first_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/email"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:text="Nombre"
+            android:textSize="16sp"
+            android:textColor="@color/white"/>
+
+        <!-- Apellidos -->
+        <TextView
+            android:id="@+id/last_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/first_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:text="Apellidos"
+            android:textSize="16sp"
+            android:textColor="@color/white"/>
+    </RelativeLayout>
 
 
 </LinearLayout>
