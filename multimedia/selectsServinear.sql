@@ -13,6 +13,13 @@ UPDATE usuarios
 SET Estado = 1
 WHERE ID = 7;
 
+select * from servicio;
+-- ID, id_usuario, Nombre, descripcion, contacto, precio_hora, Foto, Fecha_de_creacion, Estado
+
+UPDATE servicio
+SET Nombre  = ?, descripcion  = ?, contacto  = ?, precio_hora  = ?, Foto  = ?
+WHERE ID = ?;
+
 
 SELECT 
     servicio.ID,

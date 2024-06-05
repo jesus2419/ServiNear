@@ -5,17 +5,18 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 
-class servicio : AppCompatActivity() {
+class miServicio : AppCompatActivity() {
     private lateinit var userManager: UserManager
     private lateinit var modificar: Button
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_servicio)
+        setContentView(R.layout.activity_mi_servicio)
 
+        modificar = findViewById(R.id.modificar_btn)
 
         userManager = UserManager.getInstance(this)
 
@@ -46,5 +47,22 @@ class servicio : AppCompatActivity() {
 
 
 
+        modificar.setOnClickListener {
+            Toast.makeText(this, "*no hace nada*", Toast.LENGTH_SHORT).show()
+
+
+
+
+        }
+
+
+
+
+        val user = userManager.getUser()
+        if (user != null) {
+            modificar.isVisible = user.esPrestador
+        }
     }
+
+    
 }

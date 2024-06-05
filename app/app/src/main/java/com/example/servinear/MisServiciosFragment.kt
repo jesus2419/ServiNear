@@ -75,6 +75,7 @@ class MisServiciosFragment : Fragment() {
                         Log.d("Servicios", "Número de servicios recibidos: ${jsonArray.length()}")
                         for (i in 0 until jsonArray.length()) {
                             val servicio = jsonArray.getJSONObject(i)
+                            val id_servicio = servicio.getString("ID")
                             val nombre = servicio.getString("NombreServicio")
                             val descripcion = servicio.getString("descripcion")
                             val contacto = servicio.getString("contacto")
@@ -88,7 +89,7 @@ class MisServiciosFragment : Fragment() {
                             val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                             if (imagenBitmap != null) {
                                 // Mostrar el servicio en la interfaz
-                                mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
+                                mostrarServicio(id_servicio, nombre, descripcion, contacto, precio_hora, imagenBitmap)
                             } else {
                                 Log.e("DecodeError", "Error al decodificar la imagen base64")
                             }
@@ -102,13 +103,13 @@ class MisServiciosFragment : Fragment() {
                     e.printStackTrace()
                     showErrorToast("Error al procesar la respuesta del servidor")
                     // Intentar cargar servicios locales en caso de error
-                    cargarServiciosLocales()
+                    //cargarServiciosLocales()
                 }
             },
             Response.ErrorListener { error ->
                 handleVolleyError(error)
                 // Intentar cargar servicios locales en caso de error
-                cargarServiciosLocales()
+                //cargarServiciosLocales()
             }
         ) {
             override fun getParams(): Map<String, String> {
@@ -142,7 +143,7 @@ class MisServiciosFragment : Fragment() {
                     val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                     if (imagenBitmap != null) {
                         // Mostrar el servicio en la interfaz
-                        mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
+                       // mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
                     } else {
                         Log.e("DecodeError", "Error al decodificar la imagen base64")
                     }
@@ -156,7 +157,7 @@ class MisServiciosFragment : Fragment() {
         }
     }
 
-    private fun mostrarServicio(nombre: String, descripcion: String, contacto: String, precio_hora: String, imagen: Bitmap) {
+    private fun mostrarServicio(idservicio: String, nombre: String, descripcion: String, contacto: String, precio_hora: String, imagen: Bitmap) {
         // Crear un nuevo contenedor para el servicio
         val servicioLayout = LinearLayout(requireActivity())
         servicioLayout.orientation = LinearLayout.HORIZONTAL
@@ -174,7 +175,8 @@ class MisServiciosFragment : Fragment() {
             val byteArray = byteArrayOutputStream.toByteArray()
 
             // Abrir la actividad de detalle del servicio
-            val intent = Intent(activity, servicio::class.java)
+            val intent = Intent(activity, miServicio::class.java)
+            intent.putExtra("ID", idservicio)
             intent.putExtra("nombre", nombre)
             intent.putExtra("descripcion", descripcion)
             intent.putExtra("contacto", contacto)
