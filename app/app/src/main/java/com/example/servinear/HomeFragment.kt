@@ -120,19 +120,19 @@ class HomeFragment : Fragment() {
                     } else {
                         showErrorToast("No se encontraron servicios")
                         // Intentar cargar servicios locales si no hay datos remotos
-                        cargarServiciosLocales()
+                        //cargarServiciosLocales()
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
                     showErrorToast("Error al procesar la respuesta del servidor")
                     // Intentar cargar servicios locales en caso de error
-                    cargarServiciosLocales()
+                    //cargarServiciosLocales()
                 }
             },
             Response.ErrorListener { error ->
                 handleVolleyError(error)
                 // Intentar cargar servicios locales en caso de error
-                cargarServiciosLocales()
+                //cargarServiciosLocales()
             }
         )
 

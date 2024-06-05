@@ -122,7 +122,7 @@ class MisServiciosFragment : Fragment() {
                     } else {
                         showErrorToast("No se encontraron servicios")
                         // Intentar cargar servicios locales si no hay datos remotos
-                        cargarServiciosLocales()
+                        //cargarServiciosLocales()
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
