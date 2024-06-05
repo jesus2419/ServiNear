@@ -94,11 +94,15 @@ class registro : AppCompatActivity() {
         // Agregar un listener al botón de registro
         registerButton.setOnClickListener {
             // Verificar conexión a Internet
+            registerButton.isEnabled = false
+
             if (isNetworkAvailable()) {
-                registrarUsuarioDesdeUI()
+                registrarUsuarioDesdeUI ()
             } else {
                 // Guardar datos localmente en caso de no tener conexión
                 guardarDatosLocalmenteDesdeUI()
+                // Habilitar el botón después de completar la operación
+                registerButton.isEnabled = true
             }
         }
     }
@@ -225,11 +229,13 @@ class registro : AppCompatActivity() {
         }
 
         Volley.newRequestQueue(this).add(request)
+
+        registerButton.isEnabled = true
     }
 
     private fun dirigirActividadSegunTipoUsuario(esPrestador: Boolean) {
         if (esPrestador) {
-            val intent = Intent(this, registrar_servicio::class.java)
+            val intent = Intent(this, MainActivity2::class.java)
             startActivity(intent)
         } else {
             val intent = Intent(this, MainActivity2::class.java)

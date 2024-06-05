@@ -1,6 +1,4 @@
-package com.example.servinear
 
-import ServicioSeleccionado
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -17,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -25,6 +24,8 @@ import com.android.volley.TimeoutError
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
+import com.example.servinear.R
+import com.example.servinear.servicio
 import org.json.JSONArray
 import org.json.JSONException
 import java.io.ByteArrayOutputStream
@@ -32,8 +33,8 @@ import java.io.ByteArrayOutputStream
 class HomeFragment : Fragment() {
 
     private lateinit var serviciosContainer: LinearLayout
+    private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,22 +43,49 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         serviciosContainer = view.findViewById(R.id.usuarios_container)
+        searchView = view.findViewById(R.id.search_view)
 
         // Inicialización de SharedPreferences
         sharedPreferences = requireActivity().getSharedPreferences("DatosServicios", Context.MODE_PRIVATE)
 
-
-
         ServicioSeleccionado.getInstance().clear()
 
-
         // Configurar el listener para el SearchView
-
+        setupSearchView()
 
         // Intentar cargar los servicios desde la base de datos remota
         obtenerServiciosDesdeServidor()
 
         return view
+    }
+
+    private fun setupSearchView() {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterServicios(newText)
+                return true
+            }
+        })
+    }
+
+    private fun filterServicios(query: String?) {
+        val count = serviciosContainer.childCount
+        for (i in 0 until count) {
+            val child = serviciosContainer.getChildAt(i) as LinearLayout
+            val textView = child.getChildAt(1) as LinearLayout // Acceder al layout de datos
+            val nombreTextView = textView.getChildAt(0) as TextView // Nombre del servicio
+
+            val userName = nombreTextView.text.toString()
+            if (userName.contains(query ?: "", ignoreCase = true)) {
+                child.visibility = View.VISIBLE
+            } else {
+                child.visibility = View.GONE
+            }
+        }
     }
 
     private fun obtenerServiciosDesdeServidor() {
@@ -132,7 +160,7 @@ class HomeFragment : Fragment() {
                     val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                     if (imagenBitmap != null) {
                         // Mostrar el servicio en la interfaz
-                        //mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
+                        mostrarServicio("", nombre, descripcion, contacto, precio_hora, imagenBitmap)
                     } else {
                         Log.e("DecodeError", "Error al decodificar la imagen base64")
                     }

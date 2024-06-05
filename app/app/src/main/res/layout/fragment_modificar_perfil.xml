@@ -25,8 +25,7 @@
 
             android:src="@drawable/icon_account_circle"
             android:scaleType="centerCrop"
-            android:background="@drawable/circle_background"
-            android:padding="5dp"/>
+            />
 
         <!-- Nombre de usuario -->
 
@@ -104,15 +103,6 @@
         android:textSize="20sp"
         android:id="@+id/cerrar_btn"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="crear servicio"
-        android:backgroundTint="@color/black"
-        android:textColor="#3B84F1"
-        android:padding="18dp"
-        android:layout_marginTop="32dp"
-        android:textSize="20sp"
-        android:id="@+id/servicio_btn"/>
+
 
 </LinearLayout>

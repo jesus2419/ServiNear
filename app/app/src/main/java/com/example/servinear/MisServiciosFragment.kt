@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -30,11 +31,11 @@ import java.io.ByteArrayOutputStream
 class MisServiciosFragment : Fragment() {
 
     private lateinit var serviciosContainer: LinearLayout
+    private lateinit var searchView: SearchView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userManager: UserManager
 
     private lateinit var servicioSeleccionado: ServicioSeleccionado
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,21 +44,48 @@ class MisServiciosFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_mis_servicios, container, false)
         serviciosContainer = view.findViewById(R.id.usuarios_container)
-
-        // Inicialización de SharedPreferences
-        //sharedPreferences = requireActivity().getSharedPreferences("DatosServicios", Context.MODE_PRIVATE)
+        searchView = view.findViewById(R.id.search_view)  // Referencia al SearchView
 
         // Inicialización de UserManager
         userManager = UserManager.getInstance(requireActivity())
-
         servicioSeleccionado = ServicioSeleccionado.getInstance()
 
-
+        // Configurar el listener para el SearchView
+        setupSearchView()
 
         // Intentar cargar los servicios desde la base de datos remota
         obtenerServiciosDesdeServidor()
 
         return view
+    }
+
+    private fun setupSearchView() {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterServicios(newText)
+                return true
+            }
+        })
+    }
+
+    private fun filterServicios(query: String?) {
+        val count = serviciosContainer.childCount
+        for (i in 0 until count) {
+            val child = serviciosContainer.getChildAt(i) as LinearLayout
+            val textView = child.getChildAt(1) as LinearLayout // Acceder al layout de datos
+            val nombreTextView = textView.getChildAt(0) as TextView // Nombre del servicio
+
+            val userName = nombreTextView.text.toString()
+            if (userName.contains(query ?: "", ignoreCase = true)) {
+                child.visibility = View.VISIBLE
+            } else {
+                child.visibility = View.GONE
+            }
+        }
     }
 
     private fun obtenerServiciosDesdeServidor() {
@@ -99,14 +127,10 @@ class MisServiciosFragment : Fragment() {
                 } catch (e: JSONException) {
                     e.printStackTrace()
                     showErrorToast("Error al procesar la respuesta del servidor")
-                    // Intentar cargar servicios locales en caso de error
-                    //cargarServiciosLocales()
                 }
             },
             Response.ErrorListener { error ->
                 handleVolleyError(error)
-                // Intentar cargar servicios locales en caso de error
-                //cargarServiciosLocales()
             }
         ) {
             override fun getParams(): Map<String, String> {
@@ -140,7 +164,7 @@ class MisServiciosFragment : Fragment() {
                     val imagenBitmap = decodeBase64ToBitmap(imagenBase64)
                     if (imagenBitmap != null) {
                         // Mostrar el servicio en la interfaz
-                        // mostrarServicio(nombre, descripcion, contacto, precio_hora, imagenBitmap)
+                        mostrarServicio("", nombre, descripcion, contacto, precio_hora, imagenBitmap)
                     } else {
                         Log.e("DecodeError", "Error al decodificar la imagen base64")
                     }
@@ -172,7 +196,6 @@ class MisServiciosFragment : Fragment() {
             val byteArray = byteArrayOutputStream.toByteArray()
 
             // Guardar la información del servicio en la clase Singleton
-
             servicioSeleccionado.setServicio(idservicio, nombre, descripcion, contacto, precio_hora, byteArray)
 
             // Abrir la actividad de detalle del servicio

@@ -22,7 +22,6 @@ class ModificarPerfilFragment : Fragment() {
     private lateinit var firstName: TextView
     private lateinit var lastName: TextView
     private lateinit var modificarBtn: Button
-    private lateinit var servicioBtn: Button
     private lateinit var cerrarBtn: Button
 
     override fun onCreateView(
@@ -39,7 +38,6 @@ class ModificarPerfilFragment : Fragment() {
         firstName = view.findViewById(R.id.first_name)
         lastName = view.findViewById(R.id.last_name)
         modificarBtn = view.findViewById(R.id.modificar_btn)
-        servicioBtn = view.findViewById(R.id.servicio_btn)
         cerrarBtn = view.findViewById(R.id.cerrar_btn)
 
         // Cargar y mostrar los datos del perfil
@@ -52,11 +50,7 @@ class ModificarPerfilFragment : Fragment() {
             startActivity(intent)
         }
 
-        servicioBtn.setOnClickListener {
-            // Agrega la lógica para registrar un servicio aquí
-            val intent = Intent(activity, registrar_servicio::class.java)
-            startActivity(intent)
-        }
+
 
         // Configurar el listener para el botón de cerrar sesión
         cerrarBtn.setOnClickListener {
