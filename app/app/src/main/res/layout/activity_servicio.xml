@@ -201,6 +201,19 @@
             android:text="Apellidos"
             android:textSize="16sp"
             android:textColor="@color/white"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Iniciar Chat"
+            android:layout_below="@id/last_name"
+
+            android:backgroundTint="@color/black"
+            android:textColor="#3B84F1"
+            android:padding="18dp"
+            android:layout_marginTop="32dp"
+            android:textSize="20sp"
+            android:id="@+id/chat_btn"/>
     </RelativeLayout>
 
 

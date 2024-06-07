@@ -2,9 +2,12 @@ package com.example.servinear
 
 
 import ServicioSeleccionado
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -26,6 +29,10 @@ class servicio : AppCompatActivity() {
     private lateinit var email: TextView
     private lateinit var firstName: TextView
     private lateinit var lastName: TextView
+    private lateinit var chatbtn: Button
+
+    private lateinit var username: String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +45,8 @@ class servicio : AppCompatActivity() {
         email = findViewById(R.id.email)
         firstName = findViewById(R.id.first_name)
         lastName = findViewById(R.id.last_name)
+        chatbtn = findViewById(R.id.chat_btn)
+
 
         // Obtener la instancia del servicio seleccionado
         val servicioSeleccionado = ServicioSeleccionado.getInstance()
@@ -67,9 +76,33 @@ class servicio : AppCompatActivity() {
 
         loadProfileData()
 
+        chatbtn.setOnClickListener {
+            val username2 = userManager.getUser()?.username  // Obtener el nombre de usuario de UserManager
+            Log.d("Perfil", "Username: ${username2}")
+            Log.d("Perfil2", "Username2: ${username}")
+            val id_user = ServicioSeleccionado.getInstance().idServicio.toString()
+            Log.d("Perfil3", "id: ${id_user}")
+
+
+
+            if (username == username2 ){
+                Toast.makeText(this, "Usted es el creador de este servicio", Toast.LENGTH_SHORT).show()
+
+            }else  {
+                val intent = Intent(this, chat::class.java)
+                intent.putExtra("USERNAME", username)
+                intent.putExtra("id", id_user)
+                startActivity(intent)
+
+            }
+
+        }
+
         // Configurar la visibilidad del botón de modificar según el tipo de usuario
 
     }
+
+
 
 
     private fun loadProfileData() {
@@ -89,7 +122,7 @@ class servicio : AppCompatActivity() {
                         val nombre = jsonObject.getString("nombre")
                         val apellidos = jsonObject.getString("apellidos")
                         val correo = jsonObject.getString("correo")
-                        val username = jsonObject.getString("usuario")
+                        username = jsonObject.getString("usuario")
                         val pass = jsonObject.getString("pass")
 
                         val imagenBase64 = jsonObject.getString("imagen")
