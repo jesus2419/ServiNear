@@ -53,3 +53,35 @@ END //
 
 DELIMITER ;
 
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE InsertChatMessage(
+    IN p_id_destinatario INT,
+    IN p_contenido VARCHAR(255),
+    IN p_nombre_usuario_remitente VARCHAR(50)
+)
+BEGIN
+    DECLARE v_id_remitente INT;
+
+    -- Buscar el ID del remitente usando el nombre de usuario
+    SELECT ID INTO v_id_remitente
+    FROM Usuarios
+    WHERE usuario = p_nombre_usuario_remitente;
+
+    -- Verificar si se encontró el ID del remitente
+    IF v_id_remitente IS NOT NULL THEN
+        -- Insertar el nuevo mensaje en la tabla chat
+        INSERT INTO chat (id_destinatario, id_remitente, contenido, fecha_de_creacion, estado)
+        VALUES (p_id_destinatario, v_id_remitente, p_contenido, NOW(), 1);
+    ELSE
+        -- Manejo de error si el remitente no existe
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El usuario remitente no existe';
+    END IF;
+END //
+
+DELIMITER ;
+

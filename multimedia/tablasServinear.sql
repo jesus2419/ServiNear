@@ -47,3 +47,16 @@ CREATE TABLE servicio (
 
 ALTER TABLE servicio MODIFY descripcion VARCHAR(255);
 
+CREATE TABLE `chat` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `id_destinatario` int DEFAULT NULL,
+  `id_remitente` int DEFAULT NULL,
+  `contenido` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `fecha_de_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  `estado` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`ID`),
+  KEY `id_destinatario` (`id_destinatario`),
+  KEY `id_remitente` (`id_remitente`),
+  CONSTRAINT `chat_ibfk_1` FOREIGN KEY (`id_destinatario`) REFERENCES `usuarios` (`ID`),
+  CONSTRAINT `chat_ibfk_2` FOREIGN KEY (`id_remitente`) REFERENCES `usuarios` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
