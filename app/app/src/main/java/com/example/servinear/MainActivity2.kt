@@ -92,11 +92,13 @@ class MainActivity2 : AppCompatActivity(), NavigationView.OnNavigationItemSelect
             R.id.nav_perfil -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, ModificarPerfilFragment()).commit()
             R.id.nav_info -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, InfoFragment()).commit()
             R.id.nav_servicio -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, MisServiciosFragment()).commit()
+            R.id.nav_chat -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, MostrarchatsFragment()).commit()
 
-           /* R.id.nav_perfil -> {
-                val intent = Intent(this, Perfil::class.java)
-                startActivity(intent)
-            }*/
+
+            /* R.id.nav_perfil -> {
+                 val intent = Intent(this, Perfil::class.java)
+                 startActivity(intent)
+             }*/
             R.id.nav_agregarservicio -> {
                 val intent = Intent(this, registrar_servicio::class.java)
                 startActivity(intent)

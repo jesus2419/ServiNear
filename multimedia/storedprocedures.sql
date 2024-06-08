@@ -85,3 +85,41 @@ END //
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE PROCEDURE ObtenerChatsPorUsuario(IN p_usuario VARCHAR(255))
+BEGIN
+    SELECT 
+        c.ID AS ChatID,
+        c.contenido,
+        c.fecha_de_creacion,
+        c.estado,
+        u1.usuario AS Remitente,
+        u2.usuario AS Destinatario,
+        u2.ID AS id_destino,
+        u2.Foto AS foto
+    FROM 
+        chat c
+    JOIN 
+        Usuarios u1 ON c.id_remitente = u1.ID
+    JOIN 
+        Usuarios u2 ON c.id_destinatario = u2.ID
+    JOIN 
+        (
+            SELECT 
+                GREATEST(id_remitente, id_destinatario) AS usuario, 
+                MAX(fecha_de_creacion) AS max_fecha
+            FROM 
+                chat
+            GROUP BY 
+                GREATEST(id_remitente, id_destinatario)
+        ) subq ON GREATEST(c.id_remitente, c.id_destinatario) = subq.usuario AND c.fecha_de_creacion = subq.max_fecha
+    WHERE 
+        u1.usuario = p_usuario OR u2.usuario = p_usuario
+    ORDER BY 
+        c.fecha_de_creacion ASC;
+END $$
+
+DELIMITER ;
+
+

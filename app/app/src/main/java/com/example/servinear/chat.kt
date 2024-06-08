@@ -209,71 +209,6 @@ class chat : AppCompatActivity() {
         queue.add(stringRequest)
     }
 
-    /*
-    private fun loadChatMessages() {
-        val url = "http://74.235.95.67/api/mostrarmensaje.php"
-        val queue: RequestQueue = Volley.newRequestQueue(this)
-        val jsonArrayRequest = JsonArrayRequest(
-            Request.Method.GET, url, null,
-            Response.Listener { response ->
-                try {
-                    if (response.length() > 0) {
-                        Log.d("Servicios", "Número de servicios recibidos: ${response.length()}")
-                        for (i in 0 until response.length()) {
-                            val chatMessage = response.getJSONObject(i)
-                            val id = chatMessage.getInt("ChatID")
-                            val contenido = chatMessage.getString("contenido")
-                            val fecha = chatMessage.getString("fecha_de_creacion")
-                            val estado = chatMessage.getInt("estado")
-                            val remitente = chatMessage.getString("Remitente")
-                            val destinatario = chatMessage.getString("Destinatario")
-
-                            // Obtener el nombre de usuario actual
-                            val username = userManager.getUser()?.username
-
-                            // Determinar el layout según el remitente y el usuario actual
-                            val layoutId = if (remitente == username) {
-                                crearLayoutRemitente(remitente, contenido)
-                            } else {
-                                crearLayoutDestinatario(destinatario, contenido)
-                            }
-
-                            // Mostrar el mensaje en el layout correspondiente
-                            chatContainer.addView(layoutId)
-
-                        }
-                    } else {
-                        showErrorToast("No se encontraron servicios")
-                        // Intentar cargar servicios locales si no hay datos remotos
-                        //cargarServiciosLocales()
-                    }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                    showErrorToast("Error al procesar la respuesta del servidor")
-                    // Intentar cargar servicios locales en caso de error
-                    //cargarServiciosLocales()
-                }
-            },
-            Response.ErrorListener { error ->
-                handleVolleyError(error)
-                // Puedes intentar cargar mensajes locales en caso de error
-                // cargarMensajesLocales()
-            }) {
-
-            override fun getParams(): MutableMap<String, String> {
-                val params = HashMap<String, String>()
-                params["remitente"] = "jesus6"
-                params["idDestinatario"] = "3"
-                return params
-            }
-        }
-
-        queue.add(jsonArrayRequest)
-    }
-    */
-
-
-
 
     private fun crearLayoutRemitente(remitente: String, contenido: String): LinearLayout {
         // Crear layout para remitente
@@ -354,43 +289,6 @@ class chat : AppCompatActivity() {
         destinatarioLayout.addView(contenidoTextView)
 
         return destinatarioLayout
-    }
-
-    private fun mostrarMensaje(remitente: String, destinatario: String, fecha: String, contenido: String) {
-        // Crear un nuevo contenedor para el servicio
-
-
-        val servicioLayout = LinearLayout(this)
-        servicioLayout.orientation = LinearLayout.HORIZONTAL
-        servicioLayout.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        // TextView para el nombre
-        val nombreTextView = TextView(this)
-        nombreTextView.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        nombreTextView.text = contenido
-        nombreTextView.textSize = 20f  // Tamaño del texto grande
-        nombreTextView.setTextColor(resources.getColor(R.color.white))  // Color del texto blanco
-
-        // TextView para la descripción
-        val descripcionTextView = TextView(this)
-        descripcionTextView.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        // Agregar los TextView al layout de datos
-        servicioLayout.addView(nombreTextView)
-
-
-
-        // Agregar el layout del servicio al contenedor principal
-        chatContainer.addView(servicioLayout)
     }
 
 

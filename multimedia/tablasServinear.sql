@@ -29,6 +29,10 @@ CREATE TABLE Usuarios (
     FOREIGN KEY (id_rol) REFERENCES Rol(Id) -- Agregar la clave externa que referencia a la tabla Rol
 );
 
+ALTER TABLE Usuarios
+ADD CONSTRAINT unique_usuario UNIQUE (usuario);
+
+
 SELECT Nombre, descripcion, Foto FROM servicio WHERE Estado = 1;
 
 CREATE TABLE servicio (
