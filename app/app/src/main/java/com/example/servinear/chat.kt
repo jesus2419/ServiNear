@@ -2,6 +2,7 @@ package com.example.servinear
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Handler
 import android.util.Base64
 import android.util.Log
 import android.view.Gravity
@@ -32,6 +33,10 @@ class chat : AppCompatActivity() {
     private lateinit var mensajeInput: EditText
     private lateinit var userManager: UserManager
     private lateinit var chatContainer: LinearLayout
+
+    private val handler = Handler()
+    private lateinit var updateRunnable: Runnable
+
 
 
 
@@ -74,6 +79,18 @@ class chat : AppCompatActivity() {
 
         }
 
+
+
+        // Configurar el Runnable para actualizar mensajes
+        updateRunnable = object : Runnable {
+            override fun run() {
+                if (idUsuario != null && username2 != null) {
+                    obtenerMensajesDesdeServidor(idUsuario, username2)
+                }
+                handler.postDelayed(this, 5000) // Actualizar cada 5 segundos
+            }
+        }
+        handler.post(updateRunnable)
 
 
         // Botón para registrar servicio
@@ -144,6 +161,75 @@ class chat : AppCompatActivity() {
 
     }
 
+    private fun obtenerMensajesDesdeServidor(idUsuario: String, usuario: String) {
+        val url = "http://74.235.95.67/api/mostrarmensaje.php"
+        val queue: RequestQueue = Volley.newRequestQueue(this)
+
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> { response ->
+                try {
+                    val jsonArray = JSONArray(response)
+                    if (jsonArray.length() > 0) {
+                        Log.d("Mensajes", "Número de mensajes recibidos: ${jsonArray.length()}")
+
+                        // Limpiar el contenedor de mensajes antes de agregar los nuevos
+                        chatContainer.removeAllViews()
+
+                        for (i in 0 until jsonArray.length()) {
+                            val chatMessage = jsonArray.getJSONObject(i)
+                            val remitente = chatMessage.getString("Remitente")
+                            val destinatario = chatMessage.getString("Destinatario")
+                            val fecha = chatMessage.getString("fecha_de_creacion")
+                            val contenido = chatMessage.getString("contenido")
+
+                            val username = userManager.getUser()?.username
+
+                            // Determinar el layout según el remitente y el usuario actual
+                            val layoutId = if (remitente == username) {
+                                crearLayoutRemitente(remitente, contenido)
+                            } else {
+                                crearLayoutDestinatario(remitente, contenido)
+                            }
+
+                            // Mostrar el mensaje en el layout correspondiente
+                            chatContainer.addView(layoutId)
+                        }
+                    } else {
+                        //showErrorToast("No se encontraron mensajes")
+                        Log.d("responseeee", "res: $jsonArray")
+                        Log.d("responseeee", "id: $idUsuario")
+                        Log.d("responseeee", "user: $usuario")
+
+                        // Puedes intentar cargar mensajes locales si no hay datos remotos
+                        // cargarMensajesLocales()
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    showErrorToast("Error al procesar la respuesta del servidor")
+                    // Puedes intentar cargar mensajes locales en caso de error
+                    // cargarMensajesLocales()
+                }
+            },
+            Response.ErrorListener { error ->
+                handleVolleyError(error)
+                // Puedes intentar cargar mensajes locales en caso de error
+                // cargarMensajesLocales()
+            }) {
+
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["remitente"] = usuario
+                params["idDestinatario"] = idUsuario
+                return params
+            }
+        }
+
+        queue.add(stringRequest)
+    }
+
+
+    /*
     private fun obtenerMensajesDesdeServidor(idUsuario : String, usuario : String) {
         val url = "http://74.235.95.67/api/mostrarmensaje.php"
         val queue: RequestQueue = Volley.newRequestQueue(this)
@@ -208,6 +294,8 @@ class chat : AppCompatActivity() {
 
         queue.add(stringRequest)
     }
+
+     */
 
 
     private fun crearLayoutRemitente(remitente: String, contenido: String): LinearLayout {
@@ -356,6 +444,12 @@ class chat : AppCompatActivity() {
 
     private fun showErrorToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(updateRunnable)
     }
 
     private fun handleVolleyError(error: VolleyError) {
